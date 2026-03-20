@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TGH K9">
+<meta name="theme-color" content="#0a2240">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>TGH K9 Training Log</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+:root{--nv:#0a2240;--nv2:#0f3060;--gd:#c8a84b;--gd2:#e6c96a;--rd:#c0392b}
+html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
+.scr{display:none;flex-direction:column;min-height:100vh;background:#f4f5f7}
+.scr.on{display:flex}
+.hdr{background:var(--nv);padding:max(12px,env(safe-area-inset-top)) 14px 12px;display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--gd);flex-shrink:0}
+.hdr-logo{width:36px;height:36px;border-radius:50%;border:2px solid var(--gd);object-fit:cover;flex-shrink:0}
+.hdr-t{font-size:14px;font-weight:700;color:#fff}
+.hdr-s{font-size:10px;color:#a0b4cc;text-transform:uppercase;letter-spacing:.05em}
+.body{flex:1;padding:20px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.login-logo{width:96px;height:96px;border-radius:50%;border:3px solid var(--gd);object-fit:cover;display:block;margin:0 auto 18px}
+.pg-title{font-size:22px;font-weight:800;text-align:center;color:#1a1a1a;margin-bottom:6px}
+.pg-sub{font-size:14px;color:#888;text-align:center;margin-bottom:26px}
+.role-btn{width:100%;display:flex;align-items:center;gap:14px;padding:18px 16px;background:#fff;border:2px solid #e0e0e0;border-radius:16px;cursor:pointer;text-align:left;margin-bottom:12px}
+.role-btn:active{border-color:var(--gd);background:#fffbef}
+.role-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.role-name{font-size:15px;font-weight:700;color:#1a1a1a;display:block}
+.role-desc{font-size:12px;color:#888;margin-top:2px;display:block}
+.pin-logo{width:80px;height:80px;border-radius:50%;border:3px solid var(--gd);object-fit:cover;display:block;margin:0 auto 16px}
+.pin-input{display:block;width:240px;margin:0 auto;font-size:32px;letter-spacing:.5em;text-align:center;padding:13px 10px;background:#fff;border:2px solid #ccc;border-radius:14px;color:#1a1a1a}
+.pin-input:focus{outline:none;border-color:var(--gd);box-shadow:0 0 0 3px rgba(200,168,75,.2)}
+.pin-err{display:none;background:#fce4ec;border:1.5px solid #e57373;border-radius:10px;padding:12px;color:#b71c1c;font-size:13px;text-align:center;margin:12px auto 0;width:240px}
+.back-btn{display:block;width:240px;margin:14px auto 0;padding:13px;background:#f5f5f5;border:1.5px solid #ccc;border-radius:12px;font-size:14px;color:#555;cursor:pointer;text-align:center}
+.syncbar{background:#edf0f5;border-bottom:1px solid #dde0e5;padding:6px 14px;display:flex;align-items:center;gap:8px;font-size:11px;color:#999;flex-shrink:0}
+.sdot{width:8px;height:8px;border-radius:50%;background:#4caf50;flex-shrink:0}
+.sdot.sy{background:var(--gd);animation:pu .8s infinite}
+.sdot.er{background:var(--rd)}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
+.tabs{background:var(--nv2);display:flex;border-bottom:2px solid rgba(200,168,75,.3);flex-shrink:0}
+.tab{flex:1;padding:13px 4px;font-size:11px;font-weight:700;color:#7a90aa;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;text-transform:uppercase;letter-spacing:.06em}
+.tab.on{color:var(--gd2);border-bottom-color:var(--gd)}
+.panel{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px}
+.panel.on{display:block}
+.slbl{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#bbb;margin:18px 0 8px}
+.slbl:first-child{margin-top:0}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;font-size:15px;padding:11px 13px;background:#fff;border:1.5px solid #ccc;border-radius:10px;color:#1a1a1a;display:block}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23aaa' d='M6 8 0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;-webkit-appearance:none;appearance:none}
+.field textarea{resize:vertical;min-height:80px;line-height:1.55}
+.row2{display:flex;gap:10px}.row2 .field{flex:1}
+.rule{border:none;border-top:1px solid #eee;margin:16px 0}
+.pbtn{width:100%;padding:15px;background:var(--nv);color:var(--gd);border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;display:block;margin-top:8px}
+.pbtn:active{opacity:.85}
+.sbtn{padding:11px 16px;background:#f5f5f5;color:#555;border:1.5px solid #ccc;border-radius:10px;font-size:13px;cursor:pointer}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chip{padding:7px 15px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid #ccc;background:#f5f5f5;color:#666;cursor:pointer}
+.chip.on{background:var(--nv);color:var(--gd);border-color:var(--nv)}
+.chip.da{border-style:dashed;opacity:.7}
+.frow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:13px;flex-wrap:nowrap}
+.frow::-webkit-scrollbar{display:none}
+.fc{padding:8px 15px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid #ccc;background:#f5f5f5;color:#666;cursor:pointer;white-space:nowrap}
+.fc.on{background:var(--nv);color:var(--gd);border-color:var(--nv)}
+.hcard{background:#fff;border:1.5px solid #e0e0e0;border-radius:14px;padding:14px;margin-bottom:12px}
+.hdr2{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hnum{background:var(--nv);color:var(--gd);width:30px;height:30px;border-radius:50%;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rrow{display:flex;gap:7px;flex-wrap:wrap}
+.rb{padding:8px 12px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid #ccc;background:#f5f5f5;color:#555;cursor:pointer;white-space:nowrap}
+.rb.ap{background:#e8f5e9;border-color:#388e3c;color:#1b5e20}
+.rb.am{background:#fce4ec;border-color:#d32f2f;color:#b71c1c}
+.rb.aa{background:#fff3e0;border-color:#f57c00;color:#bf360c}
+.rb.ap2{background:#fffde7;border-color:#f9a825;color:#e65100}
+.ahbtn{width:100%;padding:14px;border:2px dashed #ccc;border-radius:12px;background:none;font-size:14px;font-weight:600;color:#aaa;cursor:pointer;margin-bottom:4px}
+.scard{background:#fff;border:1.5px solid #e0e0e0;border-radius:14px;padding:15px;margin-bottom:13px;cursor:pointer}
+.scard:active{border-color:var(--gd)}
+.smeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.sdatetxt{font-size:13px;font-weight:800}
+.badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:800;letter-spacing:.04em;border:1px solid}
+.bg{background:rgba(200,168,75,.15);color:#8a6800;border-color:rgba(200,168,75,.5)}
+.bt{background:rgba(15,110,86,.15);color:#085041;border-color:rgba(15,110,86,.4)}
+.sstats{display:flex;gap:14px;font-size:11px;color:#aaa;margin-top:7px}
+.sds{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.srch{width:100%;padding:11px 13px;font-size:14px;border:1.5px solid #ccc;border-radius:10px;background:#fff;color:#1a1a1a;margin-bottom:13px;display:block}
+.empty{text-align:center;padding:50px 20px;color:#ccc;font-size:14px;line-height:1.8}
+.rcard{background:#fff;border:1.5px solid #e0e0e0;border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:13px}
+.rimg{width:46px;height:46px;border-radius:50%;border:2px solid var(--gd);object-fit:cover;flex-shrink:0}
+.ibox{background:#f5f5f5;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#666;line-height:1.6}
+.ibox strong{color:#1a1a1a;font-weight:700}
+.dhdr{background:var(--nv);padding:max(12px,env(safe-area-inset-top)) 14px 12px;display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--gd);flex-shrink:0}
+.dscroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px}
+.dfooter{padding:13px 16px;border-top:1.5px solid #eee;display:flex;gap:10px;background:#fff;flex-shrink:0;padding-bottom:max(13px,env(safe-area-inset-bottom))}
+.drow{display:flex;gap:8px;margin-bottom:5px}
+.dkey{font-size:12px;color:#aaa;min-width:76px;flex-shrink:0}
+.dval{font-size:12px;color:#1a1a1a;line-height:1.4}
+.dhide{border:1.5px solid #eee;border-radius:10px;padding:12px;margin-bottom:10px}
+.dhdr2{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.tview{background:rgba(15,110,86,.07);border:1.5px solid rgba(15,110,86,.35);border-radius:12px;padding:14px;margin-top:14px}
+.tedit{background:rgba(15,110,86,.06);border:1.5px solid rgba(15,110,86,.3);border-radius:12px;padding:14px;margin-top:14px}
+.tlbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#085041;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.tbdg{background:rgba(15,110,86,.15);color:#085041;border:1px solid rgba(15,110,86,.4);padding:2px 8px;border-radius:8px;font-size:10px;font-weight:800}
+.rc{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:1px solid;flex-shrink:0;margin-left:auto}
+.rco{background:rgba(200,168,75,.2);color:#7a5a00;border-color:rgba(200,168,75,.5)}
+.rca{background:rgba(24,95,165,.2);color:#0a3a7a;border-color:rgba(24,95,165,.5)}
+.rct{background:rgba(15,110,86,.2);color:#064030;border-color:rgba(15,110,86,.5)}
+.dtabs2{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="s-login" class="scr on">
+  <div class="hdr">
+    <img class="hdr-logo" src="icon-192.png" alt="TGH K9">
+    <div><div class="hdr-t">K9 Training Log</div><div class="hdr-s">Tampa General Hospital</div></div>
+  </div>
+  <div class="body">
+    <img class="login-logo" src="icon-192.png" alt="TGH K9">
+    <div class="pg-title">K9 Security Program</div>
+    <div class="pg-sub">Tampa General Hospital &mdash; Select your role</div>
+    <button class="role-btn" id="rb-officer">
+      <span class="role-icon" style="background:rgba(200,168,75,.12)">&#128110;</span>
+      <span style="flex:1"><span class="role-name">Officer / Handler</span><span class="role-desc">Log sessions &middot; view your K9&rsquo;s records</span></span>
+      <span style="font-size:22px;color:#ccc">&rsaquo;</span>
+    </button>
+    <button class="role-btn" id="rb-admin">
+      <span class="role-icon" style="background:rgba(24,95,165,.1)">&#128737;&#65039;</span>
+      <span style="flex:1"><span class="role-name">Admin / Supervisor</span><span class="role-desc">Full access &middot; all K9s &middot; exports</span></span>
+      <span style="font-size:22px;color:#ccc">&rsaquo;</span>
+    </button>
+    <button class="role-btn" id="rb-trainer">
+      <span class="role-icon" style="background:rgba(15,110,86,.1)">&#127891;</span>
+      <span style="flex:1"><span class="role-name">External Trainer</span><span class="role-desc">View all K9s &middot; add assessments</span></span>
+      <span style="font-size:22px;color:#ccc">&rsaquo;</span>
+    </button>
+    <p style="font-size:11px;color:#ccc;text-align:center;margin-top:10px">Version 1.0 &middot; TGH Security Operations</p>
+  </div>
+</div>
+
+<!-- PIN -->
+<div id="s-pin" class="scr">
+  <div class="hdr">
+    <img class="hdr-logo" src="icon-192.png" alt="TGH K9">
+    <div><div class="hdr-t">K9 Training Log</div><div class="hdr-s">Tampa General Hospital</div></div>
+  </div>
+  <div class="body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+    <img class="pin-logo" src="icon-192.png" alt="TGH K9">
+    <div class="pg-title" id="pin-lbl" style="margin-bottom:0">Enter PIN</div>
+    <div class="pg-sub" style="margin-bottom:0">Enter your 4-digit access PIN</div>
+    <input id="pin-inp" class="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="&bull;&bull;&bull;&bull;" autocomplete="off">
+    <div id="pin-err" class="pin-err">Incorrect PIN &mdash; please try again</div>
+    <button id="pin-back" class="back-btn">&larr; Back to role select</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="s-app" class="scr">
+  <div class="hdr">
+    <img class="hdr-logo" src="icon-192.png" alt="TGH K9">
+    <div><div class="hdr-t">K9 Training Log</div><div class="hdr-s" id="portal-lbl">Portal</div></div>
+    <span id="role-chip" class="rc rco">Officer</span>
+    <button id="btn-logout" style="background:none;border:none;color:#a0b4cc;font-size:20px;cursor:pointer;margin-left:6px;padding:4px">&#9211;</button>
+  </div>
+  <div class="syncbar"><span class="sdot" id="sdot"></span><span id="slbl">Connecting&hellip;</span></div>
+  <div class="tabs">
+    <button class="tab on" data-tab="log" id="t-log">New Session</button>
+    <button class="tab" data-tab="audit" id="t-audit">Audit Log</button>
+    <button class="tab" data-tab="dogs" id="t-dogs">K9 Roster</button>
+  </div>
+  <div class="panel on" id="p-log">
+    <div class="slbl">Session Information</div>
+    <div class="row2">
+      <div class="field"><label>Date</label><input type="date" id="s-date"></div>
+      <div class="field"><label>Time</label><input type="time" id="s-time"></div>
+    </div>
+    <div class="field"><label>Training Location</label>
+      <select id="s-loc"><option value="">&#8212; Select location &#8212;</option>
+        <option>Main Lobby</option><option>Emergency Department</option>
+        <option>Parking Garage &#8212; Level 1</option><option>Parking Garage &#8212; Level 2</option>
+        <option>Parking Garage &#8212; Level 3</option><option>Helipad / Rooftop</option>
+        <option>Loading Dock</option><option>Cafeteria</option>
+        <option>Administrative Wing</option><option>Off-site Training Facility</option>
+        <option>Other (specify in notes)</option>
+      </select></div>
+    <div class="field"><label>Training Objective</label>
+      <select id="s-obj"><option value="">&#8212; Select objective &#8212;</option>
+        <option>Odor Recognition &#8212; Pistol</option><option>Odor Recognition &#8212; Rifle</option>
+        <option>Odor Recognition &#8212; Shotgun</option><option>Odor Recognition &#8212; Ammunition</option>
+        <option>Odor Recognition &#8212; Mixed Hides</option><option>Passive Alert Behavior</option>
+        <option>Vehicle Search</option><option>Room Search &#8212; Clear Space</option>
+        <option>Room Search &#8212; Cluttered</option><option>Crowd / Public Access</option>
+        <option>Distraction Proofing</option><option>Handler Mechanics</option>
+        <option>Certification Prep</option><option>Annual Recertification</option>
+      </select></div>
+    <div class="field"><label>Handler</label><input type="text" id="s-hand" placeholder="Handler name / badge #" autocomplete="off"></div>
+    <div class="field"><label>K9 Partner</label><div class="chips" id="dog-chips"></div></div>
+    <div class="field"><label>Weather / Environment</label>
+      <select id="s-wx"><option value="">&#8212; Optional &#8212;</option>
+        <option>Clear / Dry</option><option>Hot &amp; Humid</option><option>Windy</option>
+        <option>Rainy</option><option>Overcast</option>
+        <option>Indoor &#8212; Climate Controlled</option><option>Indoor &#8212; High Traffic Odor</option>
+      </select></div>
+    <hr class="rule">
+    <div class="slbl">Hide Documentation</div>
+    <div id="hides-wrap"></div>
+    <button class="ahbtn" id="btn-ah">+ Add Hide</button>
+    <hr class="rule">
+    <div class="slbl">Training Notes</div>
+    <div class="field"><label>Observations / Concerns</label><textarea id="s-notes" placeholder="Session notes, behavioral observations, areas for improvement&hellip;"></textarea></div>
+    <div class="field"><label>Certifying Supervisor</label><input type="text" id="s-sup" placeholder="Optional" autocomplete="off"></div>
+    <button class="pbtn" id="btn-save">&#128190; Save Training Session</button>
+    <div style="height:32px"></div>
+  </div>
+  <div class="panel" id="p-audit">
+    <div id="dog-tab-bar"></div>
+    <input type="text" class="srch" id="audit-q" placeholder="Search handler, location, objective&hellip;" autocomplete="off">
+    <div class="frow" id="frow">
+      <button class="fc on" data-f="all">All</button>
+      <button class="fc" data-f="pass">Alert Pass</button>
+      <button class="fc" data-f="miss">Miss</button>
+      <button class="fc" data-f="cert">Cert Prep</button>
+      <button class="fc" data-f="trainer" id="trainer-fc" style="display:none">Trainer Note</button>
+    </div>
+    <div id="audit-list"></div>
+  </div>
+  <div class="panel" id="p-dogs">
+    <div class="ibox" id="roster-info"></div>
+    <div id="roster-list"></div>
+    <button class="pbtn" id="btn-adddog" style="display:none">+ Add K9 Partner</button>
+    <div style="height:32px"></div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div id="s-detail" class="scr">
+  <div class="dhdr">
+    <button id="btn-back" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:0 10px 0 0">&#8592;</button>
+    <div><div class="hdr-t" id="d-title">Session Detail</div></div>
+  </div>
+  <div class="dscroll" id="d-body"></div>
+  <div class="dfooter" id="d-footer"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0fV4WikHd76TZLdDs0INIiT3uHXoTaxA",
+  authDomain: "tgh-k9-13ea3.firebaseapp.com",
+  projectId: "tgh-k9-13ea3",
+  storageBucket: "tgh-k9-13ea3.firebasestorage.app",
+  messagingSenderId: "467104319705",
+  appId: "1:467104319705:web:4add7810a5595b477e96c8"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+var PINS={officer:'5966',admin:'7363',trainer:'8038'};
+var RL={officer:'Officer',admin:'Admin',trainer:'Trainer'};
+var HT=['Pistol \u2014 Handgun','Pistol \u2014 Magazine','Rifle \u2014 Long Gun','Shotgun','Ammo \u2014 Live Rounds','Ammo \u2014 Spent','Mixed Firearm Odor','Blank / Training Aid'];
+var HL=['Under seat','Behind door panel','Inside bag / backpack','Under vehicle','In trash receptacle','On person','Inside locker','On shelf','In drawer','Overhead / ceiling area','Vehicle trunk','Behind counter','Custom (see notes)'];
+var RS=['Alert \u2014 Correct \u2713','Partial Alert','False Negative \u2014 Miss','False Positive','No response','Refused area'];
+var RC={'Alert \u2014 Correct \u2713':'ap','Partial Alert':'ap2','False Negative \u2014 Miss':'am','False Positive':'aa'};
+
+var sessions=[],dogs=['Rex','Titan','Nova'];
+var hides=[],hcnt=0,selDog='Rex',af='all',df='all',openIdx=null,role=null,pr=null;
+var unsubSessions=null;
+
+function show(id){
+  document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on');});
+  document.getElementById('s-'+id).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+document.getElementById('rb-officer').addEventListener('click',function(){startPin('officer');});
+document.getElementById('rb-admin').addEventListener('click',function(){startPin('admin');});
+document.getElementById('rb-trainer').addEventListener('click',function(){startPin('trainer');});
+document.getElementById('pin-back').addEventListener('click',function(){show('login');});
+document.getElementById('btn-logout').addEventListener('click',function(){
+  role=null;hides=[];hcnt=0;
+  if(unsubSessions){unsubSessions();unsubSessions=null;}
+  show('login');
+});
+document.getElementById('btn-back').addEventListener('click',function(){show('app');});
+document.getElementById('btn-ah').addEventListener('click',addHide);
+document.getElementById('btn-save').addEventListener('click',saveSession);
+document.getElementById('btn-adddog').addEventListener('click',addDog);
+document.getElementById('audit-q').addEventListener('input',renderAudit);
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){showTab(this.dataset.tab);});});
+document.getElementById('frow').addEventListener('click',function(e){
+  var b=e.target.closest('.fc');if(!b)return;
+  af=b.dataset.f;
+  document.querySelectorAll('.fc').forEach(function(c){c.classList.remove('on');});
+  b.classList.add('on');renderAudit();
+});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+}
+
+function startPin(r){
+  pr=r;
+  var L={officer:'Handler / Officer Access',admin:'Admin / Supervisor Access',trainer:'External Trainer Access'};
+  document.getElementById('pin-lbl').textContent=L[r];
+  document.getElementById('pin-inp').value='';
+  document.getElementById('pin-err').style.display='none';
+  show('pin');
+  setTimeout(function(){document.getElementById('pin-inp').focus();},300);
+}
+
+document.getElementById('pin-inp').addEventListener('input',function(){
+  if(this.value.length<4)return;
+  if(this.value===PINS[pr]){role=pr;document.getElementById('pin-inp').value='';enterApp();}
+  else{
+    document.getElementById('pin-err').style.display='block';
+    var me=this;
+    setTimeout(function(){me.value='';document.getElementById('pin-err').style.display='none';},1800);
+  }
+});
+
+function enterApp(){
+  var chip=document.getElementById('role-chip');
+  chip.textContent=RL[role];
+  chip.className='rc '+(role==='officer'?'rco':role==='admin'?'rca':'rct');
+  document.getElementById('portal-lbl').textContent=role==='officer'?'Officer Portal':role==='admin'?'Admin Portal':'Trainer Portal';
+  document.getElementById('t-dogs').style.display=role==='officer'?'none':'';
+  if(role!=='officer')document.getElementById('trainer-fc').style.display='';
+  setToday();
+  loadDogs().then(function(){
+    renderChips();
+    if(role==='officer')selDog=dogs[0]||'Rex';
+  });
+  startRealtimeSync();
+  showTab('log');
+  show('app');
+}
+
+function showTab(t){
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('on',b.dataset.tab===t);});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.getElementById('p-'+t).classList.add('on');
+  if(t==='audit')renderAudit();
+  if(t==='dogs')renderRoster();
+}
+
+function setSS(state,msg){
+  var d=document.getElementById('sdot'),l=document.getElementById('slbl');
+  if(!d||!l)return;
+  d.className='sdot'+(state==='sy'?' sy':state==='er'?' er':'');
+  l.textContent=msg;
+}
+
+async function loadDogs(){
+  try{
+    var docSnap=await getDoc(doc(db,'config','dogs'));
+    if(docSnap.exists()&&docSnap.data().list){
+      dogs=docSnap.data().list;
+    } else {
+      await setDoc(doc(db,'config','dogs'),{list:['Rex','Titan','Nova']});
+      dogs=['Rex','Titan','Nova'];
+    }
+  }catch(e){
+    try{dogs=JSON.parse(localStorage.getItem('tgh_dogs')||'["Rex","Titan","Nova"]');}catch(x){dogs=['Rex','Titan','Nova'];}
+  }
+}
+
+async function saveDogs(){
+  try{
+    await setDoc(doc(db,'config','dogs'),{list:dogs});
+  }catch(e){
+    localStorage.setItem('tgh_dogs',JSON.stringify(dogs));
+  }
+}
+
+function startRealtimeSync(){
+  setSS('sy','Connecting to Firebase\u2026');
+  try{
+    var q=query(collection(db,'sessions'),orderBy('id','desc'));
+    unsubSessions=onSnapshot(q,function(snapshot){
+      sessions=[];
+      snapshot.forEach(function(d){sessions.push(Object.assign({fbId:d.id},d.data()));});
+      setSS('ok','Live \u2014 synced across all devices');
+      renderAudit();
+    },function(err){
+      setSS('er','Firebase error \u2014 check connection');
+    });
+  }catch(e){
+    setSS('er','Could not connect to Firebase');
+  }
+}
+
+function setToday(){
+  var now=new Date();
+  var d=document.getElementById('s-date'),t=document.getElementById('s-time');
+  if(d)d.value=now.toISOString().split('T')[0];
+  if(t){var h=String(now.getHours()).padStart(2,'0'),m=String(now.getMinutes()).padStart(2,'0');t.value=h+':'+m;}
+}
+
+function renderChips(){
+  var c=document.getElementById('dog-chips');if(!c)return;
+  c.innerHTML='';
+  var vis=role==='officer'?[dogs[0]]:dogs;
+  vis.filter(Boolean).forEach(function(d){
+    var b=document.createElement('button');
+    b.className='chip'+(d===selDog?' on':'');b.textContent=d;
+    b.addEventListener('click',function(){selDog=d;document.querySelectorAll('#dog-chips .chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');});
+    c.appendChild(b);
+  });
+  if(role!=='officer'){
+    var a=document.createElement('button');a.className='chip da';a.textContent='+ Add';
+    a.addEventListener('click',addDog);c.appendChild(a);
+  }
+}
+
+function addHide(){hcnt++;hides.push({id:'h'+hcnt,item:'',loc:'',note:'',resp:'',notes:''});renderHides();}
+function remHide(id){hides=hides.filter(function(h){return h.id!==id;});renderHides();}
+function uh(id,f,v){var h=hides.find(function(h){return h.id===id;});if(h)h[f]=v;}
+function sr2(id,r){var h=hides.find(function(h){return h.id===id;});if(h){h.resp=r;renderHides();}}
+
+function renderHides(){
+  var c=document.getElementById('hides-wrap');if(!c)return;
+  if(!hides.length){c.innerHTML='';return;}
+  c.innerHTML=hides.map(function(h,i){
+    var to=HT.map(function(v){return '<option'+(h.item===v?' selected':'')+'>'+v+'</option>';}).join('');
+    var lo=HL.map(function(v){return '<option'+(h.loc===v?' selected':'')+'>'+v+'</option>';}).join('');
+    var rb=RS.map(function(r){return '<button class="rb '+(h.resp===r?(RC[r]||''):'')+'" data-hid="'+h.id+'" data-r="'+encodeURIComponent(r)+'">'+r+'</button>';}).join('');
+    return '<div class="hcard"><div class="hdr2"><div class="hnum">'+(i+1)+'</div><span style="font-size:13px;font-weight:700;flex:1">Hide #'+(i+1)+'</span>'+
+      '<button style="background:none;border:none;color:#ccc;font-size:20px;cursor:pointer;padding:4px 8px" data-del="'+h.id+'">&#215;</button></div>'+
+      '<div class="field"><label>Item Placed</label><select data-hid="'+h.id+'" data-f="item"><option value="">&#8212; Select &#8212;</option>'+to+'</select></div>'+
+      '<div class="field"><label>Location</label><select data-hid="'+h.id+'" data-f="loc"><option value="">&#8212; Select &#8212;</option>'+lo+'</select></div>'+
+      '<div class="field"><label>Placement Notes</label><input type="text" data-hid="'+h.id+'" data-f="note" value="'+(h.note||'')+'" placeholder="e.g. Level 2, col B\u2026" autocomplete="off"></div>'+
+      '<div class="field"><label>Dog Response</label><div class="rrow">'+rb+'</div></div>'+
+      '<div class="field"><label>Hide Notes</label><textarea data-hid="'+h.id+'" data-f="notes" placeholder="Response quality, handler cues\u2026">'+(h.notes||'')+'</textarea></div>'+
+      '</div>';
+  }).join('');
+  c.querySelectorAll('[data-del]').forEach(function(b){b.addEventListener('click',function(){remHide(this.dataset.del);});});
+  c.querySelectorAll('select[data-hid]').forEach(function(s){s.addEventListener('change',function(){uh(this.dataset.hid,this.dataset.f,this.value);});});
+  c.querySelectorAll('input[data-hid]').forEach(function(s){s.addEventListener('input',function(){uh(this.dataset.hid,this.dataset.f,this.value);});});
+  c.querySelectorAll('textarea[data-hid]').forEach(function(s){s.addEventListener('input',function(){uh(this.dataset.hid,this.dataset.f,this.value);});});
+  c.querySelectorAll('.rb[data-r]').forEach(function(b){b.addEventListener('click',function(){sr2(this.dataset.hid,decodeURIComponent(this.dataset.r));});});
+}
+
+async function saveSession(){
+  var date=document.getElementById('s-date').value;
+  var loc=document.getElementById('s-loc').value;
+  var hand=document.getElementById('s-hand').value.trim();
+  if(!date||!loc||!hand){alert('Please fill in date, location, and handler.');return;}
+  setSS('sy','Saving\u2026');
+  var s={
+    id:Date.now(),date:date,time:document.getElementById('s-time').value,
+    location:loc,objective:document.getElementById('s-obj').value,
+    handler:hand,dog:selDog,weather:document.getElementById('s-wx').value,
+    notes:document.getElementById('s-notes').value.trim(),
+    supervisor:document.getElementById('s-sup').value.trim(),
+    hides:JSON.parse(JSON.stringify(hides)),
+    trainerNote:'',trainerName:'',trainerDate:''
+  };
+  try{
+    await addDoc(collection(db,'sessions'),s);
+    setSS('ok','Saved \u2014 synced to all devices');
+    alert('Session saved!');
+    hides=[];hcnt=0;renderHides();
+    ['s-notes','s-sup','s-hand'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('s-loc').selectedIndex=0;
+    document.getElementById('s-obj').selectedIndex=0;
+    setToday();
+  }catch(e){
+    setSS('er','Save failed \u2014 check connection');
+    alert('Error saving session. Check your internet connection.');
+  }
+}
+
+function setDogFilter(d){df=d;renderAudit();}
+window.setDogFilter=setDogFilter;
+
+function renderAudit(){
+  var dt=document.getElementById('dog-tab-bar');
+  if(role==='officer'){dt.innerHTML='';}
+  else{
+    dt.innerHTML='<div class="dtabs2">'+['all'].concat(dogs).map(function(d){
+      return '<button class="chip'+(df===d?' on':'')+'" onclick="setDogFilter(\''+d+'\')">'+(d==='all'?'All K9s':d)+'</button>';
+    }).join('')+'</div>';
+  }
+  var q=(document.getElementById('audit-q').value||'').toLowerCase();
+  var list=document.getElementById('audit-list');if(!list)return;
+  var vis=sessions.filter(function(s){
+    if(role==='officer'&&s.dog!==dogs[0])return false;
+    if(df!=='all'&&role!=='officer'&&s.dog!==df)return false;
+    if(q&&![s.dog,s.handler,s.location,s.objective,s.notes].join(' ').toLowerCase().includes(q))return false;
+    if(af==='pass')return s.hides.some(function(h){return h.resp&&h.resp.includes('Correct');});
+    if(af==='miss')return s.hides.some(function(h){return h.resp&&h.resp.includes('Miss');});
+    if(af==='cert')return s.objective&&s.objective.includes('Cert');
+    if(af==='trainer')return s.trainerNote&&s.trainerNote.trim();
+    return true;
+  });
+  if(!vis.length){
+    list.innerHTML='<div class="empty">&#128203;<br><br>'+(sessions.length?'No sessions match your filters.':'No sessions yet.<br>Use New Session to start.')+'</div>';
+    return;
+  }
+  list.innerHTML='';
+  vis.forEach(function(s){
+    var idx=sessions.indexOf(s);
+    var passes=s.hides.filter(function(h){return h.resp&&h.resp.includes('Correct');}).length;
+    var misses=s.hides.filter(function(h){return h.resp&&h.resp.includes('Miss');}).length;
+    var ht=s.trainerNote&&s.trainerNote.trim();
+    var card=document.createElement('div');
+    card.className='scard';
+    card.innerHTML='<div class="smeta"><span class="sdatetxt">'+fmtDate(s.date)+'</span>'+
+      (s.time?'<span style="font-size:12px;color:#aaa">'+s.time+'</span>':'')+
+      '<span class="badge bg">'+(s.dog||'\u2014')+'</span>'+
+      (ht?'<span class="badge bt">Trainer note</span>':'')+
+      '</div><div style="font-size:12px;color:#777;margin-bottom:4px">&#128205; '+(s.location||'\u2014')+' &middot; '+(s.handler||'\u2014')+'</div>'+
+      (s.objective?'<div style="font-size:12px;color:#777;margin-bottom:4px">'+s.objective+'</div>':'')+
+      '<div class="sstats"><span><span class="sds" style="background:#388e3c"></span>'+passes+' pass</span>'+
+      '<span><span class="sds" style="background:#d32f2f"></span>'+misses+' miss</span>'+
+      '<span><span class="sds" style="background:#bbb"></span>'+s.hides.length+' hides</span></div>';
+    card.addEventListener('click',function(){openSession(idx);});
+    list.appendChild(card);
+  });
+}
+
+function openSession(idx){
+  openIdx=idx;var s=sessions[idx];
+  document.getElementById('d-title').textContent=fmtDate(s.date)+' \u2014 '+(s.dog||'K9');
+  var hidesHTML=s.hides.length?s.hides.map(function(h,i){
+    return '<div class="dhide"><div class="dhdr2"><div class="hnum">'+(i+1)+'</div><strong style="font-size:13px">'+(h.item||'Not specified')+'</strong></div>'+
+      '<div class="drow"><span class="dkey">Location</span><span class="dval">'+(h.loc||'\u2014')+(h.note?' \u2014 '+h.note:'')+'</span></div>'+
+      '<div class="drow"><span class="dkey">Response</span><span class="dval" style="font-weight:700;'+rc2(h.resp)+'">'+(h.resp||'\u2014')+'</span></div>'+
+      (h.notes?'<div class="drow"><span class="dkey">Notes</span><span class="dval">'+h.notes+'</span></div>':'')+
+      '</div>';
+  }).join(''):'<div style="color:#bbb;font-size:13px;padding:8px 0">No hides logged.</div>';
+  var thtml='';
+  if(role==='trainer'){
+    thtml='<div class="tedit"><div class="tlbl">&#127891; Trainer Assessment <span class="tbdg">External Trainer</span></div>'+
+      '<div class="field" style="margin-bottom:10px"><label>Your assessment</label><textarea id="tn-note" style="min-height:90px" placeholder="Performance notes, recommendations\u2026">'+(s.trainerNote||'')+'</textarea></div>'+
+      '<div class="field" style="margin-bottom:10px"><label>Trainer name</label><input type="text" id="tn-name" value="'+(s.trainerName||'')+'" placeholder="Your name" autocomplete="off"></div>'+
+      '<button class="pbtn" id="btn-tn" style="margin-top:0;padding:12px">Save Trainer Note</button></div>';
+  }else if(s.trainerNote&&s.trainerNote.trim()){
+    thtml='<div class="tview"><div class="tlbl">&#127891; Trainer Assessment'+(s.trainerName?' \u2014 '+s.trainerName:'')+(s.trainerDate?' ('+fmtDate(s.trainerDate)+')':'')+'</div>'+
+      '<div style="font-size:13px;line-height:1.7">'+s.trainerNote+'</div></div>';
+  }
+  document.getElementById('d-body').innerHTML=
+    '<div class="ibox" style="margin-bottom:14px">'+
+    '<div class="drow"><span class="dkey">Date</span><span class="dval">'+fmtDate(s.date)+(s.time?' at '+s.time:'')+'</span></div>'+
+    '<div class="drow"><span class="dkey">Handler</span><span class="dval">'+(s.handler||'\u2014')+'</span></div>'+
+    '<div class="drow"><span class="dkey">K9</span><span class="dval">'+(s.dog||'\u2014')+'</span></div>'+
+    '<div class="drow"><span class="dkey">Location</span><span class="dval">'+(s.location||'\u2014')+'</span></div>'+
+    '<div class="drow"><span class="dkey">Objective</span><span class="dval">'+(s.objective||'\u2014')+'</span></div>'+
+    (s.weather?'<div class="drow"><span class="dkey">Conditions</span><span class="dval">'+s.weather+'</span></div>':'')+
+    (s.supervisor?'<div class="drow"><span class="dkey">Supervisor</span><span class="dval">'+s.supervisor+'</span></div>':'')+
+    '</div>'+
+    '<div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#bbb;margin-bottom:10px">Hides ('+s.hides.length+')</div>'+
+    hidesHTML+
+    (s.notes?'<hr style="border:none;border-top:1px solid #eee;margin:14px 0"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#bbb;margin-bottom:8px">Session Notes</div><div style="font-size:13px;line-height:1.7">'+s.notes+'</div>':'')+
+    thtml+'<div style="height:16px"></div>';
+  var tn=document.getElementById('btn-tn');if(tn)tn.addEventListener('click',function(){saveTN(idx);});
+  var canDel=role==='admin',canExp=role==='admin'||role==='trainer';
+  var fhtml='';
+  if(canExp)fhtml+='<button class="pbtn" id="btn-exp" style="flex:1;margin-top:0">&#128196; Export Report</button>';
+  if(canDel)fhtml+='<button class="sbtn" id="btn-del" style="color:var(--rd);border-color:var(--rd)">Delete</button>';
+  if(!canExp&&!canDel)fhtml='<button class="sbtn" id="btn-cl" style="flex:1">Close</button>';
+  document.getElementById('d-footer').innerHTML=fhtml;
+  var ex=document.getElementById('btn-exp');if(ex)ex.addEventListener('click',exportReport);
+  var dl=document.getElementById('btn-del');if(dl)dl.addEventListener('click',deleteSession);
+  var cl=document.getElementById('btn-cl');if(cl)cl.addEventListener('click',function(){show('app');});
+  show('detail');
+}
+
+async function saveTN(idx){
+  var n=(document.getElementById('tn-note')||{}).value||'';
+  var nm=(document.getElementById('tn-name')||{}).value||'';
+  var s=sessions[idx];
+  if(!s.fbId){alert('Cannot save — session ID missing.');return;}
+  setSS('sy','Saving trainer note\u2026');
+  try{
+    await setDoc(doc(db,'sessions',s.fbId),Object.assign({},s,{trainerNote:n,trainerName:nm,trainerDate:new Date().toISOString().split('T')[0]}));
+    setSS('ok','Trainer note saved \u2014 synced');
+    alert('Trainer note saved!');show('app');showTab('audit');
+  }catch(e){
+    setSS('er','Save failed');alert('Error saving. Check connection.');
+  }
+}
+
+async function deleteSession(){
+  if(!confirm('Delete this session? Cannot be undone.'))return;
+  var s=sessions[openIdx];
+  if(!s.fbId){alert('Cannot delete — session ID missing.');return;}
+  try{
+    await deleteDoc(doc(db,'sessions',s.fbId));
+    show('app');showTab('audit');
+  }catch(e){alert('Error deleting. Check connection.');}
+}
+
+function exportReport(){
+  var s=sessions[openIdx];
+  var ht=s.hides.map(function(h,i){return 'Hide #'+(i+1)+': '+(h.item||'\u2014')+'\n  Location: '+(h.loc||'\u2014')+(h.note?' ('+h.note+')':'')+'\n  Response: '+(h.resp||'\u2014')+'\n  Notes: '+(h.notes||'\u2014');}).join('\n\n');
+  var ln='='.repeat(50),dash='-'.repeat(50);
+  var txt='TAMPA GENERAL HOSPITAL\nK9 SECURITY UNIT \u2014 TRAINING SESSION REPORT\n'+ln+'\n\n'+
+    'Date: '+fmtDate(s.date)+(s.time?' at '+s.time:'')+'\nHandler: '+(s.handler||'\u2014')+'\nK9 Partner: '+(s.dog||'\u2014')+
+    '\nLocation: '+(s.location||'\u2014')+'\nObjective: '+(s.objective||'\u2014')+'\nConditions: '+(s.weather||'\u2014')+
+    '\nSupervisor: '+(s.supervisor||'\u2014')+'\n\n'+dash+'\nHIDE DOCUMENTATION ('+s.hides.length+' total)\n'+dash+'\n\n'+(ht||'No hides logged.')+
+    '\n\n'+dash+'\nSESSION NOTES\n'+dash+'\n\n'+(s.notes||'No additional notes.')+'\n\n'+
+    (s.trainerNote?dash+'\nTRAINER ASSESSMENT'+(s.trainerName?' \u2014 '+s.trainerName:'')+'\n'+dash+'\n\n'+s.trainerNote+'\n\n':'')+
+    ln+'\nGenerated: '+new Date().toLocaleString()+'\nExported by: '+RL[role]+' Portal\nTampa General Hospital \u2014 K9 Security Unit\nCONFIDENTIAL \u2014 For internal use only\n';
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download='TGH_K9_'+s.date+'_'+(s.dog||'K9').replace(/\s/g,'_')+'.txt';
+  a.click();
+}
+
+function renderRoster(){
+  var info=document.getElementById('roster-info');
+  var list=document.getElementById('roster-list');
+  var btn=document.getElementById('btn-adddog');
+  if(role==='officer'){
+    if(info)info.innerHTML='<strong>Your assigned K9</strong><br>Contact an admin to update the roster.';
+    if(btn)btn.style.display='none';
+  }else{
+    if(info)info.innerHTML='<strong>Firearms Detection Unit</strong><br>TGH K9 Security. '+(role==='admin'?'Manage K9 partners below.':'Read-only view.');
+    if(btn)btn.style.display=role==='admin'?'block':'none';
+  }
+  var vis=role==='officer'?[dogs[0]]:dogs;
+  list.innerHTML='';
+  vis.filter(Boolean).forEach(function(d,i){
+    var card=document.createElement('div');card.className='rcard';
+    card.innerHTML='<img class="rimg" src="icon-192.png" alt="K9">'+
+      '<div style="flex:1"><div style="font-weight:800;font-size:15px">'+d+'</div>'+
+      '<div style="font-size:12px;color:#888">Firearms Detection &middot; '+sessions.filter(function(s){return s.dog===d;}).length+' sessions</div></div>'+
+      (role==='admin'?'<button class="sbtn" style="color:var(--rd);border-color:var(--rd);font-size:12px" data-rm="'+i+'">Remove</button>':'');
+    var rm=card.querySelector('[data-rm]');
+    if(rm)rm.addEventListener('click',function(){removeDog(parseInt(this.dataset.rm));});
+    list.appendChild(card);
+  });
+}
+
+async function addDog(){
+  var name=prompt('Enter K9 partner name:');if(!name||!name.trim())return;
+  dogs.push(name.trim());await saveDogs();renderChips();renderRoster();
+}
+async function removeDog(i){
+  if(!confirm('Remove '+dogs[i]+' from roster?'))return;
+  dogs.splice(i,1);await saveDogs();renderRoster();renderChips();
+}
+
+function rc2(r){if(!r)return'';if(r.includes('Correct'))return'color:#1b5e20';if(r.includes('Miss'))return'color:#b71c1c';if(r.includes('False'))return'color:#bf360c';if(r.includes('Partial'))return'color:#e65100';return'';}
+function fmtDate(d){if(!d)return'\u2014';return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+
+</script>
+</body>
+</html>
