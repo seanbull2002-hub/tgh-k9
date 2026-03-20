@@ -55,10 +55,11 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
 .pbtn{width:100%;padding:15px;background:var(--nv);color:var(--gd);border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;display:block;margin-top:8px}
 .pbtn:active{opacity:.85}
 .sbtn{padding:11px 16px;background:#f5f5f5;color:#555;border:1.5px solid #ccc;border-radius:10px;font-size:13px;cursor:pointer}
+.ebtn{width:100%;padding:13px;background:#e8f5e9;color:#1b5e20;border:1.5px solid #388e3c;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:0}
+.ebtn:disabled{opacity:.5;cursor:default}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .chip{padding:7px 15px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid #ccc;background:#f5f5f5;color:#666;cursor:pointer}
 .chip.on{background:var(--nv);color:var(--gd);border-color:var(--nv)}
-.chip.da{border-style:dashed;opacity:.7}
 .frow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:13px;flex-wrap:nowrap}
 .frow::-webkit-scrollbar{display:none}
 .fc{padding:8px 15px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid #ccc;background:#f5f5f5;color:#666;cursor:pointer;white-space:nowrap}
@@ -106,9 +107,15 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
 .rct{background:rgba(15,110,86,.2);color:#064030;border-color:rgba(15,110,86,.5)}
 .dtabs2{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .ocard{background:#fff;border:1.5px solid #e0e0e0;border-radius:14px;padding:14px;margin-bottom:12px}
-.ocard-hdr{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.ocard-hdr{display:flex;align-items:center;gap:12px}
 .oavatar{width:42px;height:42px;border-radius:50%;background:var(--nv);color:var(--gd);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
-.readonly-banner{background:#fff8e1;border:1px solid #f9a825;border-radius:8px;padding:8px 12px;font-size:11px;color:#e65100;margin-bottom:10px;text-align:center}
+.ro-banner{background:#fff8e1;border:1px solid #f9a825;border-radius:8px;padding:8px 12px;font-size:11px;color:#e65100;margin-bottom:10px;text-align:center}
+.custom-loc{display:none;margin-top:8px}
+.export-panel{background:#f0f4f8;border:1.5px solid #dde4ed;border-radius:12px;padding:14px;margin-top:14px}
+.export-panel-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#7a90aa;margin-bottom:12px}
+.email-status{font-size:12px;text-align:center;margin-top:8px;min-height:18px;color:#555}
+.email-status.ok{color:#1b5e20;font-weight:700}
+.email-status.er{color:var(--rd);font-weight:700}
 </style>
 </head>
 <body>
@@ -130,7 +137,7 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
     </button>
     <button class="role-btn" id="rb-admin">
       <span class="role-icon" style="background:rgba(24,95,165,.1)">&#128737;&#65039;</span>
-      <span style="flex:1"><span class="role-name">Admin / Supervisor</span><span class="role-desc">Full access &middot; all K9s &middot; manage officers</span></span>
+      <span style="flex:1"><span class="role-name">Admin / Supervisor</span><span class="role-desc">Full access &middot; manage officers</span></span>
       <span style="font-size:22px;color:#ccc">&rsaquo;</span>
     </button>
     <button class="role-btn" id="rb-trainer">
@@ -138,7 +145,7 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
       <span style="flex:1"><span class="role-name">External Trainer</span><span class="role-desc">View all K9s &middot; add assessments</span></span>
       <span style="font-size:22px;color:#ccc">&rsaquo;</span>
     </button>
-    <p style="font-size:11px;color:#ccc;text-align:center;margin-top:10px">Version 2.0 &middot; TGH Security Operations</p>
+    <p style="font-size:11px;color:#ccc;text-align:center;margin-top:10px">Version 4.0 &middot; TGH Security Operations</p>
   </div>
 </div>
 
@@ -149,7 +156,7 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
     <div><div class="hdr-t">K9 Training Log</div><div class="hdr-s">Tampa General Hospital</div></div>
   </div>
   <div class="body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
-    <img style="width:80px;height:80px;border-radius:50%;border:3px solid var(--gd);object-fit:cover;display:block" src="icon-192.png" alt="TGH K9">
+    <img style="width:80px;height:80px;border-radius:50%;border:3px solid var(--gd);object-fit:cover" src="icon-192.png" alt="TGH K9">
     <div class="pg-title" id="pin-lbl" style="margin-bottom:0">Enter PIN</div>
     <div class="pg-sub" id="pin-sub" style="margin-bottom:0">Enter your 4-digit access PIN</div>
     <input id="pin-inp" class="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="&bull;&bull;&bull;&bull;" autocomplete="off">
@@ -174,22 +181,28 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
     <button class="tab" data-tab="officers" id="t-officers" style="display:none">Officers</button>
   </div>
 
-  <!-- LOG PANEL -->
+  <!-- LOG -->
   <div class="panel on" id="p-log">
     <div class="slbl">Session Information</div>
     <div class="row2">
       <div class="field"><label>Date</label><input type="date" id="s-date"></div>
       <div class="field"><label>Time</label><input type="time" id="s-time"></div>
     </div>
-    <div class="field"><label>Training Location</label>
-      <select id="s-loc"><option value="">&#8212; Select location &#8212;</option>
+    <div class="field">
+      <label>Training Location</label>
+      <select id="s-loc">
+        <option value="">&#8212; Select location &#8212;</option>
         <option>Main Lobby</option><option>Emergency Department</option>
         <option>Parking Garage &#8212; Level 1</option><option>Parking Garage &#8212; Level 2</option>
         <option>Parking Garage &#8212; Level 3</option><option>Helipad / Rooftop</option>
         <option>Loading Dock</option><option>Cafeteria</option>
         <option>Administrative Wing</option><option>Off-site Training Facility</option>
-        <option>Other (specify in notes)</option>
-      </select></div>
+        <option value="other">Other &#8212; type below</option>
+      </select>
+      <div class="custom-loc" id="custom-loc-wrap">
+        <input type="text" id="s-loc-custom" placeholder="Enter custom location&hellip;" autocomplete="off">
+      </div>
+    </div>
     <div class="field"><label>Training Objective</label>
       <select id="s-obj"><option value="">&#8212; Select objective &#8212;</option>
         <option>Odor Recognition &#8212; Pistol</option><option>Odor Recognition &#8212; Rifle</option>
@@ -220,7 +233,7 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
     <div style="height:32px"></div>
   </div>
 
-  <!-- AUDIT PANEL -->
+  <!-- AUDIT -->
   <div class="panel" id="p-audit">
     <div id="dog-tab-bar"></div>
     <input type="text" class="srch" id="audit-q" placeholder="Search handler, location, objective&hellip;" autocomplete="off">
@@ -234,7 +247,7 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
     <div id="audit-list"></div>
   </div>
 
-  <!-- DOGS PANEL -->
+  <!-- DOGS -->
   <div class="panel" id="p-dogs">
     <div class="ibox" id="roster-info"></div>
     <div id="roster-list"></div>
@@ -245,7 +258,7 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
     <div style="height:32px"></div>
   </div>
 
-  <!-- OFFICERS PANEL (admin only) -->
+  <!-- OFFICERS -->
   <div class="panel" id="p-officers">
     <div class="ibox"><strong>Officer Accounts</strong><br>Create officer accounts and assign PINs. Each officer logs in with their own PIN.</div>
     <div id="officer-list"></div>
@@ -269,10 +282,18 @@ html,body{height:100%;background:#f4f5f7;overflow-x:hidden}
   <div class="dfooter" id="d-footer"></div>
 </div>
 
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, deleteDoc, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
+// ── EmailJS init ────────────────────────────────────────────────────────────
+emailjs.init('Tgvfvca0bjn96BBek');
+
+// ── Firebase init ───────────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyB0fV4WikHd76TZLdDs0INIiT3uHXoTaxA",
   authDomain: "tgh-k9-13ea3.firebaseapp.com",
@@ -281,244 +302,191 @@ const firebaseConfig = {
   messagingSenderId: "467104319705",
   appId: "1:467104319705:web:4add7810a5595b477e96c8"
 };
-
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 
-// ── Fixed credentials ──────────────────────────────────────────────────────
-var ADMIN_PIN = '9999';
-var TRAINER_PIN = '5555';
+// ── Constants ───────────────────────────────────────────────────────────────
+var ADMIN_PIN='9999', TRAINER_PIN='5555';
+var RL={officer:'Officer',admin:'Admin',trainer:'Trainer'};
+var HT=['Pistol \u2014 Handgun','Pistol \u2014 Magazine','Rifle \u2014 Long Gun','Shotgun','Ammo \u2014 Live Rounds','Ammo \u2014 Spent','Mixed Firearm Odor','Blank / Training Aid'];
+var HL=['Under seat','Behind door panel','Inside bag / backpack','Under vehicle','In trash receptacle','On person','Inside locker','On shelf','In drawer','Overhead / ceiling area','Vehicle trunk','Behind counter','Custom (see notes)'];
+var RS=['Alert \u2014 Correct','Partial Alert','False Negative \u2014 Miss','False Positive','No response','Refused area'];
+var RC={'Alert \u2014 Correct':'ap','Partial Alert':'ap2','False Negative \u2014 Miss':'am','False Positive':'aa'};
 
-var RL = {officer:'Officer', admin:'Admin', trainer:'Trainer'};
-var HT = ['Pistol \u2014 Handgun','Pistol \u2014 Magazine','Rifle \u2014 Long Gun','Shotgun','Ammo \u2014 Live Rounds','Ammo \u2014 Spent','Mixed Firearm Odor','Blank / Training Aid'];
-var HL = ['Under seat','Behind door panel','Inside bag / backpack','Under vehicle','In trash receptacle','On person','Inside locker','On shelf','In drawer','Overhead / ceiling area','Vehicle trunk','Behind counter','Custom (see notes)'];
-var RS = ['Alert \u2014 Correct \u2713','Partial Alert','False Negative \u2014 Miss','False Positive','No response','Refused area'];
-var RC = {'Alert \u2014 Correct \u2713':'ap','Partial Alert':'ap2','False Negative \u2014 Miss':'am','False Positive':'aa'};
+// ── State ───────────────────────────────────────────────────────────────────
+var sessions=[],dogs=[],officers=[];
+var hides=[],hcnt=0,selDog='',af='all',df='all',openIdx=null;
+var role=null,pr=null,currentOfficer=null;
+var unsubSessions=null,unsubDogs=null,unsubOfficers=null;
 
-// ── State ──────────────────────────────────────────────────────────────────
-var sessions = [], dogs = [], officers = [];
-var hides = [], hcnt = 0, selDog = '';
-var af = 'all', df = 'all', openIdx = null;
-var role = null, pr = null;
-var currentOfficer = null; // {fbId, name, dog, pin}
-var unsubSessions = null, unsubDogs = null, unsubOfficers = null;
-
-// ── Screen navigation ──────────────────────────────────────────────────────
-function show(id) {
-  document.querySelectorAll('.scr').forEach(function(s){ s.classList.remove('on'); });
+// ── Navigation ──────────────────────────────────────────────────────────────
+function show(id){
+  document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on');});
   document.getElementById('s-'+id).classList.add('on');
   window.scrollTo(0,0);
 }
 
-// ── Button wiring ──────────────────────────────────────────────────────────
-document.getElementById('rb-officer').addEventListener('click', function(){ startPin('officer'); });
-document.getElementById('rb-admin').addEventListener('click', function(){ startPin('admin'); });
-document.getElementById('rb-trainer').addEventListener('click', function(){ startPin('trainer'); });
-document.getElementById('pin-back').addEventListener('click', function(){ show('login'); });
-document.getElementById('btn-logout').addEventListener('click', doLogout);
-document.getElementById('btn-back').addEventListener('click', function(){ show('app'); });
-document.getElementById('btn-ah').addEventListener('click', addHide);
-document.getElementById('btn-save').addEventListener('click', saveSession);
-document.getElementById('btn-adddog').addEventListener('click', addDog);
-document.getElementById('btn-add-officer').addEventListener('click', addOfficer);
-document.getElementById('audit-q').addEventListener('input', renderAudit);
-document.querySelectorAll('.tab').forEach(function(t){
-  t.addEventListener('click', function(){ showTab(this.dataset.tab); });
+// ── Event wiring ────────────────────────────────────────────────────────────
+document.getElementById('rb-officer').addEventListener('click',function(){startPin('officer');});
+document.getElementById('rb-admin').addEventListener('click',function(){startPin('admin');});
+document.getElementById('rb-trainer').addEventListener('click',function(){startPin('trainer');});
+document.getElementById('pin-back').addEventListener('click',function(){show('login');});
+document.getElementById('btn-logout').addEventListener('click',doLogout);
+document.getElementById('btn-back').addEventListener('click',function(){show('app');});
+document.getElementById('btn-ah').addEventListener('click',addHide);
+document.getElementById('btn-save').addEventListener('click',saveSession);
+document.getElementById('btn-adddog').addEventListener('click',addDog);
+document.getElementById('btn-add-officer').addEventListener('click',addOfficer);
+document.getElementById('audit-q').addEventListener('input',renderAudit);
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){showTab(this.dataset.tab);});});
+document.getElementById('frow').addEventListener('click',function(e){
+  var b=e.target.closest('.fc');if(!b)return;
+  af=b.dataset.f;document.querySelectorAll('.fc').forEach(function(c){c.classList.remove('on');});
+  b.classList.add('on');renderAudit();
 });
-document.getElementById('frow').addEventListener('click', function(e){
-  var b = e.target.closest('.fc'); if(!b) return;
-  af = b.dataset.f;
-  document.querySelectorAll('.fc').forEach(function(c){ c.classList.remove('on'); });
-  b.classList.add('on'); renderAudit();
+document.getElementById('s-loc').addEventListener('change',function(){
+  var w=document.getElementById('custom-loc-wrap');
+  w.style.display=this.value==='other'?'block':'none';
+  if(this.value!=='other')document.getElementById('s-loc-custom').value='';
 });
 
 if('serviceWorker' in navigator){
-  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
 }
 
-// ── PIN logic ──────────────────────────────────────────────────────────────
-function startPin(r) {
-  pr = r;
-  var labels = {
-    officer: 'Officer / Handler',
-    admin: 'Admin / Supervisor',
-    trainer: 'External Trainer'
-  };
-  var subs = {
-    officer: 'Enter your personal 4-digit PIN',
-    admin: 'Enter the admin PIN',
-    trainer: 'Enter the trainer PIN'
-  };
-  document.getElementById('pin-lbl').textContent = labels[r];
-  document.getElementById('pin-sub').textContent = subs[r];
-  document.getElementById('pin-inp').value = '';
-  document.getElementById('pin-err').style.display = 'none';
+// ── PIN ─────────────────────────────────────────────────────────────────────
+function startPin(r){
+  pr=r;
+  var labels={officer:'Officer / Handler',admin:'Admin / Supervisor',trainer:'External Trainer'};
+  var subs={officer:'Enter your personal 4-digit PIN',admin:'Enter the admin PIN',trainer:'Enter the trainer PIN'};
+  document.getElementById('pin-lbl').textContent=labels[r];
+  document.getElementById('pin-sub').textContent=subs[r];
+  document.getElementById('pin-inp').value='';
+  document.getElementById('pin-err').style.display='none';
   show('pin');
-  setTimeout(function(){ document.getElementById('pin-inp').focus(); }, 300);
+  setTimeout(function(){document.getElementById('pin-inp').focus();},300);
 }
 
-document.getElementById('pin-inp').addEventListener('input', function(){
-  if(this.value.length < 4) return;
-  var entered = this.value;
-  this.value = '';
-
-  if(pr === 'admin' && entered === ADMIN_PIN) {
-    role = 'admin'; currentOfficer = null; enterApp();
-  } else if(pr === 'trainer' && entered === TRAINER_PIN) {
-    role = 'trainer'; currentOfficer = null; enterApp();
-  } else if(pr === 'officer') {
-    // Check against officer accounts from Firebase
-    var match = officers.find(function(o){ return o.pin === entered; });
-    if(match) {
-      role = 'officer'; currentOfficer = match; enterApp();
-    } else {
-      showPinError();
-    }
-  } else {
-    showPinError();
-  }
+document.getElementById('pin-inp').addEventListener('input',function(){
+  if(this.value.length<4)return;
+  var entered=this.value;this.value='';
+  if(pr==='admin'&&entered===ADMIN_PIN){role='admin';currentOfficer=null;enterApp();}
+  else if(pr==='trainer'&&entered===TRAINER_PIN){role='trainer';currentOfficer=null;enterApp();}
+  else if(pr==='officer'){
+    var match=officers.find(function(o){return o.pin===entered;});
+    if(match){role='officer';currentOfficer=match;enterApp();}
+    else showPinErr();
+  } else showPinErr();
 });
 
-function showPinError() {
-  var err = document.getElementById('pin-err');
-  err.style.display = 'block';
-  setTimeout(function(){ err.style.display = 'none'; }, 1800);
+function showPinErr(){
+  var e=document.getElementById('pin-err');e.style.display='block';
+  setTimeout(function(){e.style.display='none';},1800);
 }
 
-// ── Enter app ──────────────────────────────────────────────────────────────
-function enterApp() {
-  var chip = document.getElementById('role-chip');
-  chip.textContent = role === 'officer' ? (currentOfficer ? currentOfficer.name : 'Officer') : RL[role];
-  chip.className = 'rc ' + (role==='officer'?'rco':role==='admin'?'rca':'rct');
-
-  var portalLbl = role === 'officer' && currentOfficer
-    ? currentOfficer.name + ' \u2014 Officer'
-    : role === 'admin' ? 'Admin Portal' : 'Trainer Portal';
-  document.getElementById('portal-lbl').textContent = portalLbl;
-
-  // Show/hide tabs based on role
-  document.getElementById('t-dogs').style.display = '';
-  document.getElementById('t-officers').style.display = role === 'admin' ? '' : 'none';
-  if(role !== 'officer') document.getElementById('trainer-fc').style.display = '';
-
+// ── Enter app ────────────────────────────────────────────────────────────────
+function enterApp(){
+  var chip=document.getElementById('role-chip');
+  chip.textContent=role==='officer'&&currentOfficer?currentOfficer.name:RL[role];
+  chip.className='rc '+(role==='officer'?'rco':role==='admin'?'rca':'rct');
+  document.getElementById('portal-lbl').textContent=
+    role==='officer'&&currentOfficer?currentOfficer.name+' \u2014 Officer':
+    role==='admin'?'Admin Portal':'Trainer Portal';
+  document.getElementById('t-officers').style.display=role==='admin'?'':'none';
+  if(role!=='officer')document.getElementById('trainer-fc').style.display='';
   setToday();
-  // Pre-fill handler name for officers
-  if(role === 'officer' && currentOfficer) {
-    document.getElementById('s-hand').value = currentOfficer.name;
+  if(role==='officer'&&currentOfficer){
+    document.getElementById('s-hand').value=currentOfficer.name;
+    if(currentOfficer.dog)selDog=currentOfficer.dog;
   }
-
   startRealtimeListeners();
-  showTab('log');
-  show('app');
+  showTab('log');show('app');
 }
 
-function doLogout() {
-  role = null; currentOfficer = null; hides = []; hcnt = 0;
-  if(unsubSessions){ unsubSessions(); unsubSessions = null; }
-  if(unsubDogs){ unsubDogs(); unsubDogs = null; }
-  if(unsubOfficers){ unsubOfficers(); unsubOfficers = null; }
+function doLogout(){
+  role=null;currentOfficer=null;hides=[];hcnt=0;
+  if(unsubSessions){unsubSessions();unsubSessions=null;}
+  if(unsubDogs){unsubDogs();unsubDogs=null;}
+  if(unsubOfficers){unsubOfficers();unsubOfficers=null;}
   show('login');
 }
 
-// ── Real-time Firebase listeners ───────────────────────────────────────────
-function startRealtimeListeners() {
-  setSS('sy', 'Connecting\u2026');
-
-  // Sessions listener
-  var sq = query(collection(db,'sessions'), orderBy('id','desc'));
-  unsubSessions = onSnapshot(sq, function(snap){
-    sessions = [];
-    snap.forEach(function(d){ sessions.push(Object.assign({fbId:d.id}, d.data())); });
-    setSS('ok', 'Live \u2014 synced across all devices');
+// ── Firebase real-time listeners ─────────────────────────────────────────────
+function startRealtimeListeners(){
+  setSS('sy','Connecting\u2026');
+  var sq=query(collection(db,'sessions'),orderBy('id','desc'));
+  unsubSessions=onSnapshot(sq,function(snap){
+    sessions=[];
+    snap.forEach(function(d){sessions.push(Object.assign({fbId:d.id},d.data()));});
+    setSS('ok','Live \u2014 synced across all devices');
     renderAudit();
-  }, function(){ setSS('er', 'Firebase error \u2014 check connection'); });
+  },function(){setSS('er','Firebase error \u2014 check connection');});
 
-  // Dogs listener — REAL TIME so adds/removes sync instantly
-  unsubDogs = onSnapshot(doc(db,'config','dogs'), function(snap){
-    if(snap.exists() && snap.data().list) {
-      dogs = snap.data().list;
-    } else {
-      dogs = [];
-    }
-    renderChips();
-    renderRoster();
-    populateOfficerDogSelect();
-  }, function(){});
+  unsubDogs=onSnapshot(doc(db,'config','dogs'),function(snap){
+    dogs=snap.exists()&&snap.data().list?snap.data().list:[];
+    renderChips();renderRoster();populateOfficerDogSelect();
+  },function(){});
 
-  // Officers listener — real time
-  unsubOfficers = onSnapshot(doc(db,'config','officers'), function(snap){
-    if(snap.exists() && snap.data().list) {
-      officers = snap.data().list;
-    } else {
-      officers = [];
-    }
+  unsubOfficers=onSnapshot(doc(db,'config','officers'),function(snap){
+    officers=snap.exists()&&snap.data().list?snap.data().list:[];
     renderOfficerList();
-  }, function(){});
+  },function(){});
 }
 
-// ── Sync status ────────────────────────────────────────────────────────────
-function setSS(state, msg) {
-  var d = document.getElementById('sdot'), l = document.getElementById('slbl');
-  if(!d||!l) return;
-  d.className = 'sdot' + (state==='sy'?' sy':state==='er'?' er':'');
-  l.textContent = msg;
+function setSS(state,msg){
+  var d=document.getElementById('sdot'),l=document.getElementById('slbl');
+  if(!d||!l)return;
+  d.className='sdot'+(state==='sy'?' sy':state==='er'?' er':'');
+  l.textContent=msg;
 }
 
-// ── Tabs ───────────────────────────────────────────────────────────────────
-function showTab(t) {
-  document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('on', b.dataset.tab===t); });
-  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('on'); });
+function showTab(t){
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('on',b.dataset.tab===t);});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
   document.getElementById('p-'+t).classList.add('on');
-  if(t==='audit') renderAudit();
-  if(t==='dogs') renderRoster();
-  if(t==='officers') renderOfficerList();
+  if(t==='audit')renderAudit();
+  if(t==='dogs')renderRoster();
+  if(t==='officers')renderOfficerList();
 }
 
-// ── Date/time ──────────────────────────────────────────────────────────────
-function setToday() {
-  var now = new Date();
-  var d = document.getElementById('s-date'), t = document.getElementById('s-time');
-  if(d) d.value = now.toISOString().split('T')[0];
-  if(t){ var h=String(now.getHours()).padStart(2,'0'), m=String(now.getMinutes()).padStart(2,'0'); t.value=h+':'+m; }
+function setToday(){
+  var now=new Date();
+  var d=document.getElementById('s-date'),t=document.getElementById('s-time');
+  if(d)d.value=now.toISOString().split('T')[0];
+  if(t){var h=String(now.getHours()).padStart(2,'0'),m=String(now.getMinutes()).padStart(2,'0');t.value=h+':'+m;}
 }
 
-// ── Dog chips ──────────────────────────────────────────────────────────────
-function renderChips() {
-  var c = document.getElementById('dog-chips'); if(!c) return;
-  c.innerHTML = '';
-  if(!dogs.length){
-    var msg = document.createElement('span');
-    msg.style='font-size:12px;color:#aaa';msg.textContent='No K9s in roster yet';
-    c.appendChild(msg); return;
-  }
-  // Officers default to their assigned dog first
-  var defaultDog = (role==='officer' && currentOfficer && currentOfficer.dog) ? currentOfficer.dog : dogs[0];
-  if(!selDog || !dogs.includes(selDog)) selDog = defaultDog;
+function getLocation(){
+  var sel=document.getElementById('s-loc');
+  if(sel.value==='other')return document.getElementById('s-loc-custom').value.trim();
+  return sel.value;
+}
+
+// ── Dog chips ─────────────────────────────────────────────────────────────────
+function renderChips(){
+  var c=document.getElementById('dog-chips');if(!c)return;c.innerHTML='';
+  if(!dogs.length){var sp=document.createElement('span');sp.style='font-size:12px;color:#aaa';sp.textContent='No K9s in roster yet';c.appendChild(sp);return;}
+  if(!selDog||!dogs.includes(selDog))selDog=dogs[0];
   dogs.forEach(function(d){
-    var b = document.createElement('button');
-    b.className = 'chip' + (d===selDog?' on':''); b.textContent = d;
-    b.addEventListener('click', function(){
-      selDog = d;
-      document.querySelectorAll('#dog-chips .chip').forEach(function(x){ x.classList.remove('on'); });
-      b.classList.add('on');
-    });
+    var b=document.createElement('button');b.className='chip'+(d===selDog?' on':'');b.textContent=d;
+    b.addEventListener('click',function(){selDog=d;document.querySelectorAll('#dog-chips .chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');});
     c.appendChild(b);
   });
 }
 
-// ── Hides ──────────────────────────────────────────────────────────────────
-function addHide(){ hcnt++; hides.push({id:'h'+hcnt,item:'',loc:'',note:'',resp:'',notes:''}); renderHides(); }
-function remHide(id){ hides=hides.filter(function(h){return h.id!==id;}); renderHides(); }
-function uh(id,f,v){ var h=hides.find(function(h){return h.id===id;}); if(h) h[f]=v; }
-function sr2(id,r){ var h=hides.find(function(h){return h.id===id;}); if(h){h.resp=r; renderHides();} }
+// ── Hides ─────────────────────────────────────────────────────────────────────
+function addHide(){hcnt++;hides.push({id:'h'+hcnt,item:'',loc:'',note:'',resp:'',notes:''});renderHides();}
+function remHide(id){hides=hides.filter(function(h){return h.id!==id;});renderHides();}
+function uh(id,f,v){var h=hides.find(function(h){return h.id===id;});if(h)h[f]=v;}
+function sr2(id,r){var h=hides.find(function(h){return h.id===id;});if(h){h.resp=r;renderHides();}}
 
-function renderHides() {
-  var c = document.getElementById('hides-wrap'); if(!c) return;
-  if(!hides.length){ c.innerHTML=''; return; }
-  c.innerHTML = hides.map(function(h,i){
-    var to = HT.map(function(v){return '<option'+(h.item===v?' selected':'')+'>'+v+'</option>';}).join('');
-    var lo = HL.map(function(v){return '<option'+(h.loc===v?' selected':'')+'>'+v+'</option>';}).join('');
-    var rb = RS.map(function(r){return '<button class="rb '+(h.resp===r?(RC[r]||'')+'" ':''" ')+'data-hid="'+h.id+'" data-r="'+encodeURIComponent(r)+'">'+r+'</button>';}).join('');
+function renderHides(){
+  var c=document.getElementById('hides-wrap');if(!c)return;
+  if(!hides.length){c.innerHTML='';return;}
+  c.innerHTML=hides.map(function(h,i){
+    var to=HT.map(function(v){return '<option'+(h.item===v?' selected':'')+'>'+v+'</option>';}).join('');
+    var lo=HL.map(function(v){return '<option'+(h.loc===v?' selected':'')+'>'+v+'</option>';}).join('');
+    var rb=RS.map(function(r){return '<button class="rb '+(h.resp===r?(RC[r]||''):'')+'" data-hid="'+h.id+'" data-r="'+encodeURIComponent(r)+'">'+r+'</button>';}).join('');
     return '<div class="hcard"><div class="hdr2"><div class="hnum">'+(i+1)+'</div><span style="font-size:13px;font-weight:700;flex:1">Hide #'+(i+1)+'</span>'+
       '<button style="background:none;border:none;color:#ccc;font-size:20px;cursor:pointer;padding:4px 8px" data-del="'+h.id+'">&#215;</button></div>'+
       '<div class="field"><label>Item Placed</label><select data-hid="'+h.id+'" data-f="item"><option value="">&#8212; Select &#8212;</option>'+to+'</select></div>'+
@@ -528,127 +496,119 @@ function renderHides() {
       '<div class="field"><label>Hide Notes</label><textarea data-hid="'+h.id+'" data-f="notes" placeholder="Response quality, handler cues\u2026">'+(h.notes||'')+'</textarea></div>'+
       '</div>';
   }).join('');
-  c.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click',function(){ remHide(this.dataset.del); }); });
-  c.querySelectorAll('select[data-hid]').forEach(function(s){ s.addEventListener('change',function(){ uh(this.dataset.hid,this.dataset.f,this.value); }); });
-  c.querySelectorAll('input[data-hid]').forEach(function(s){ s.addEventListener('input',function(){ uh(this.dataset.hid,this.dataset.f,this.value); }); });
-  c.querySelectorAll('textarea[data-hid]').forEach(function(s){ s.addEventListener('input',function(){ uh(this.dataset.hid,this.dataset.f,this.value); }); });
-  c.querySelectorAll('.rb[data-r]').forEach(function(b){ b.addEventListener('click',function(){ sr2(this.dataset.hid,decodeURIComponent(this.dataset.r)); }); });
+  c.querySelectorAll('[data-del]').forEach(function(b){b.addEventListener('click',function(){remHide(this.dataset.del);});});
+  c.querySelectorAll('select[data-hid]').forEach(function(s){s.addEventListener('change',function(){uh(this.dataset.hid,this.dataset.f,this.value);});});
+  c.querySelectorAll('input[data-hid]').forEach(function(s){s.addEventListener('input',function(){uh(this.dataset.hid,this.dataset.f,this.value);});});
+  c.querySelectorAll('textarea[data-hid]').forEach(function(s){s.addEventListener('input',function(){uh(this.dataset.hid,this.dataset.f,this.value);});});
+  c.querySelectorAll('.rb[data-r]').forEach(function(b){b.addEventListener('click',function(){sr2(this.dataset.hid,decodeURIComponent(this.dataset.r));});});
 }
 
-// ── Save session ───────────────────────────────────────────────────────────
-async function saveSession() {
-  var date = document.getElementById('s-date').value;
-  var loc  = document.getElementById('s-loc').value;
-  var hand = document.getElementById('s-hand').value.trim();
-  if(!date||!loc||!hand){ alert('Please fill in date, location, and handler.'); return; }
+// ── Save session ──────────────────────────────────────────────────────────────
+async function saveSession(){
+  var date=document.getElementById('s-date').value;
+  var loc=getLocation();
+  var hand=document.getElementById('s-hand').value.trim();
+  if(!date||!loc||!hand){alert('Please fill in date, location, and handler.');return;}
   setSS('sy','Saving\u2026');
-  var s = {
-    id: Date.now(), date: date, time: document.getElementById('s-time').value,
-    location: loc, objective: document.getElementById('s-obj').value,
-    handler: hand, dog: selDog, weather: document.getElementById('s-wx').value,
-    notes: document.getElementById('s-notes').value.trim(),
-    supervisor: document.getElementById('s-sup').value.trim(),
-    hides: JSON.parse(JSON.stringify(hides)),
-    trainerNote:'', trainerName:'', trainerDate:'',
-    // Track who created this session for edit permissions
-    createdByPin: role==='officer' && currentOfficer ? currentOfficer.pin : 'admin'
-  };
-  try {
-    await addDoc(collection(db,'sessions'), s);
-    setSS('ok','Saved \u2014 synced to all devices');
-    alert('Session saved!');
-    hides=[]; hcnt=0; renderHides();
-    ['s-notes','s-sup'].forEach(function(id){ var el=document.getElementById(id); if(el)el.value=''; });
-    if(role!=='officer') document.getElementById('s-hand').value='';
+  var s={id:Date.now(),date:date,time:document.getElementById('s-time').value,location:loc,
+    objective:document.getElementById('s-obj').value,handler:hand,dog:selDog,
+    weather:document.getElementById('s-wx').value,notes:document.getElementById('s-notes').value.trim(),
+    supervisor:document.getElementById('s-sup').value.trim(),
+    hides:JSON.parse(JSON.stringify(hides)),
+    trainerNote:'',trainerName:'',trainerDate:'',
+    createdByPin:role==='officer'&&currentOfficer?currentOfficer.pin:'admin'};
+  try{
+    await addDoc(collection(db,'sessions'),s);
+    setSS('ok','Saved \u2014 synced');alert('Session saved!');
+    hides=[];hcnt=0;renderHides();
+    ['s-notes','s-sup'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    if(role!=='officer')document.getElementById('s-hand').value='';
     document.getElementById('s-loc').selectedIndex=0;
     document.getElementById('s-obj').selectedIndex=0;
+    document.getElementById('custom-loc-wrap').style.display='none';
+    document.getElementById('s-loc-custom').value='';
     setToday();
-  } catch(e) {
-    setSS('er','Save failed'); alert('Error saving. Check your connection.');
-  }
+  }catch(e){setSS('er','Save failed');alert('Error saving. Check your connection.');}
 }
 
-// ── Audit ──────────────────────────────────────────────────────────────────
-function setDogFilter(d){ df=d; renderAudit(); }
-window.setDogFilter = setDogFilter;
+// ── Audit ─────────────────────────────────────────────────────────────────────
+function setDogFilter(d){df=d;renderAudit();}
+window.setDogFilter=setDogFilter;
 
-function renderAudit() {
-  // Dog filter tabs (admin/trainer only)
-  var dt = document.getElementById('dog-tab-bar');
-  if(role==='officer'){ dt.innerHTML=''; }
-  else {
-    dt.innerHTML = '<div class="dtabs2">' +
-      ['all'].concat(dogs).map(function(d){
-        return '<button class="chip'+(df===d?' on':'')+'" onclick="setDogFilter(\''+d+'\')">'+(d==='all'?'All K9s':d)+'</button>';
-      }).join('') + '</div>';
-  }
-  var q = (document.getElementById('audit-q').value||'').toLowerCase();
-  var list = document.getElementById('audit-list'); if(!list) return;
-  var vis = sessions.filter(function(s){
-    if(df!=='all' && role!=='officer' && s.dog!==df) return false;
-    if(q && ![s.dog,s.handler,s.location,s.objective,s.notes].join(' ').toLowerCase().includes(q)) return false;
-    if(af==='pass') return s.hides.some(function(h){return h.resp&&h.resp.includes('Correct');});
-    if(af==='miss') return s.hides.some(function(h){return h.resp&&h.resp.includes('Miss');});
-    if(af==='cert') return s.objective&&s.objective.includes('Cert');
-    if(af==='trainer') return s.trainerNote&&s.trainerNote.trim();
+function renderAudit(){
+  var dt=document.getElementById('dog-tab-bar');
+  if(role==='officer'){dt.innerHTML='';}
+  else{dt.innerHTML='<div class="dtabs2">'+['all'].concat(dogs).map(function(d){return '<button class="chip'+(df===d?' on':'')+'" onclick="setDogFilter(\''+d+'\')">'+(d==='all'?'All K9s':d)+'</button>';}).join('')+'</div>';}
+  var q=(document.getElementById('audit-q').value||'').toLowerCase();
+  var list=document.getElementById('audit-list');if(!list)return;
+  var vis=sessions.filter(function(s){
+    if(df!=='all'&&role!=='officer'&&s.dog!==df)return false;
+    if(q&&![s.dog,s.handler,s.location,s.objective,s.notes].join(' ').toLowerCase().includes(q))return false;
+    if(af==='pass')return s.hides.some(function(h){return h.resp&&h.resp.includes('Correct');});
+    if(af==='miss')return s.hides.some(function(h){return h.resp&&h.resp.includes('Miss');});
+    if(af==='cert')return s.objective&&s.objective.includes('Cert');
+    if(af==='trainer')return s.trainerNote&&s.trainerNote.trim();
     return true;
   });
-  if(!vis.length){
-    list.innerHTML='<div class="empty">&#128203;<br><br>'+(sessions.length?'No sessions match your filters.':'No sessions yet.<br>Use New Session to start.')+'</div>';
-    return;
-  }
+  if(!vis.length){list.innerHTML='<div class="empty">&#128203;<br><br>'+(sessions.length?'No sessions match your filters.':'No sessions yet.<br>Use New Session to start.')+'</div>';return;}
   list.innerHTML='';
   vis.forEach(function(s){
-    var idx = sessions.indexOf(s);
-    var passes = s.hides.filter(function(h){return h.resp&&h.resp.includes('Correct');}).length;
-    var misses = s.hides.filter(function(h){return h.resp&&h.resp.includes('Miss');}).length;
-    var ht = s.trainerNote&&s.trainerNote.trim();
-    // Check if this officer owns this session
-    var isOwn = role==='admin' || (role==='officer' && currentOfficer && s.createdByPin===currentOfficer.pin);
-    var card = document.createElement('div');
-    card.className='scard';
+    var idx=sessions.indexOf(s);
+    var passes=s.hides.filter(function(h){return h.resp&&h.resp.includes('Correct');}).length;
+    var misses=s.hides.filter(function(h){return h.resp&&h.resp.includes('Miss');}).length;
+    var ht=s.trainerNote&&s.trainerNote.trim();
+    var isOwn=role==='admin'||(role==='officer'&&currentOfficer&&s.createdByPin===currentOfficer.pin);
+    var card=document.createElement('div');card.className='scard';
     card.innerHTML='<div class="smeta"><span class="sdatetxt">'+fmtDate(s.date)+'</span>'+
       (s.time?'<span style="font-size:12px;color:#aaa">'+s.time+'</span>':'')+
       '<span class="badge bg">'+(s.dog||'\u2014')+'</span>'+
       (ht?'<span class="badge bt">Trainer note</span>':'')+
-      (!isOwn&&role==='officer'?'<span class="badge" style="background:#f5f5f5;color:#aaa;border-color:#e0e0e0">Read only</span>':'')+
+      (!isOwn&&role==='officer'?'<span class="badge" style="background:#f5f5f5;color:#aaa;border:1px solid #e0e0e0">Read only</span>':'')+
       '</div><div style="font-size:12px;color:#777;margin-bottom:4px">&#128205; '+(s.location||'\u2014')+' &middot; '+(s.handler||'\u2014')+'</div>'+
       (s.objective?'<div style="font-size:12px;color:#777;margin-bottom:4px">'+s.objective+'</div>':'')+
       '<div class="sstats"><span><span class="sds" style="background:#388e3c"></span>'+passes+' pass</span>'+
       '<span><span class="sds" style="background:#d32f2f"></span>'+misses+' miss</span>'+
       '<span><span class="sds" style="background:#bbb"></span>'+s.hides.length+' hides</span></div>';
-    card.addEventListener('click', function(){ openSession(idx); });
+    card.addEventListener('click',function(){openSession(idx);});
     list.appendChild(card);
   });
 }
 
-// ── Session detail ─────────────────────────────────────────────────────────
-function openSession(idx) {
-  openIdx = idx; var s = sessions[idx];
-  // Determine edit/delete permissions
-  var isOwn = role==='admin' || (role==='officer' && currentOfficer && s.createdByPin===currentOfficer.pin);
-  document.getElementById('d-title').textContent = fmtDate(s.date)+' \u2014 '+(s.dog||'K9');
-  var hidesHTML = s.hides.length ? s.hides.map(function(h,i){
+// ── Session detail ────────────────────────────────────────────────────────────
+function openSession(idx){
+  openIdx=idx;var s=sessions[idx];
+  var isOwn=role==='admin'||(role==='officer'&&currentOfficer&&s.createdByPin===currentOfficer.pin);
+  document.getElementById('d-title').textContent=fmtDate(s.date)+' \u2014 '+(s.dog||'K9');
+  var hidesHTML=s.hides.length?s.hides.map(function(h,i){
     return '<div class="dhide"><div class="dhdr2"><div class="hnum">'+(i+1)+'</div><strong style="font-size:13px">'+(h.item||'Not specified')+'</strong></div>'+
       '<div class="drow"><span class="dkey">Location</span><span class="dval">'+(h.loc||'\u2014')+(h.note?' \u2014 '+h.note:'')+'</span></div>'+
       '<div class="drow"><span class="dkey">Response</span><span class="dval" style="font-weight:700;'+rc2(h.resp)+'">'+(h.resp||'\u2014')+'</span></div>'+
       (h.notes?'<div class="drow"><span class="dkey">Notes</span><span class="dval">'+h.notes+'</span></div>':'')+
       '</div>';
-  }).join('') : '<div style="color:#bbb;font-size:13px;padding:8px 0">No hides logged.</div>';
-  var thtml = '';
+  }).join(''):'<div style="color:#bbb;font-size:13px;padding:8px 0">No hides logged.</div>';
+  var thtml='';
   if(role==='trainer'){
-    thtml = '<div class="tedit"><div class="tlbl">&#127891; Trainer Assessment <span class="tbdg">External Trainer</span></div>'+
+    thtml='<div class="tedit"><div class="tlbl">&#127891; Trainer Assessment <span class="tbdg">External Trainer</span></div>'+
       '<div class="field" style="margin-bottom:10px"><label>Your assessment</label><textarea id="tn-note" style="min-height:90px" placeholder="Performance notes, recommendations\u2026">'+(s.trainerNote||'')+'</textarea></div>'+
       '<div class="field" style="margin-bottom:10px"><label>Trainer name</label><input type="text" id="tn-name" value="'+(s.trainerName||'')+'" placeholder="Your name" autocomplete="off"></div>'+
       '<button class="pbtn" id="btn-tn" style="margin-top:0;padding:12px">Save Trainer Note</button></div>';
-  } else if(s.trainerNote&&s.trainerNote.trim()){
-    thtml = '<div class="tview"><div class="tlbl">&#127891; Trainer Assessment'+(s.trainerName?' \u2014 '+s.trainerName:'')+(s.trainerDate?' ('+fmtDate(s.trainerDate)+')':'')+'</div>'+
+  }else if(s.trainerNote&&s.trainerNote.trim()){
+    thtml='<div class="tview"><div class="tlbl">&#127891; Trainer Assessment'+(s.trainerName?' \u2014 '+s.trainerName:'')+(s.trainerDate?' ('+fmtDate(s.trainerDate)+')':'')+'</div>'+
       '<div style="font-size:13px;line-height:1.7">'+s.trainerNote+'</div></div>';
   }
-  var readonlyBanner = (!isOwn && role==='officer') ?
-    '<div class="readonly-banner">&#128274; Read only \u2014 logged by another officer</div>' : '';
-  document.getElementById('d-body').innerHTML =
-    readonlyBanner +
+  var roBanner=(!isOwn&&role==='officer')?'<div class="ro-banner">&#128274; Read only \u2014 logged by another officer</div>':'';
+  var canExp=role==='admin'||role==='trainer'||isOwn;
+  var exportPanel=canExp?
+    '<div class="export-panel">'+
+    '<div class="export-panel-title">Export Training Report</div>'+
+    '<button class="pbtn" id="btn-pdf" style="margin-top:0;margin-bottom:12px">&#128196; Download PDF</button>'+
+    '<div class="field" style="margin-bottom:8px"><label>Email report to</label>'+
+    '<input type="email" id="email-to" placeholder="address@example.com" autocomplete="off"></div>'+
+    '<button class="ebtn" id="btn-email">&#9993;&#65039; Send Report by Email</button>'+
+    '<div class="email-status" id="email-status"></div>'+
+    '</div>':'';
+  document.getElementById('d-body').innerHTML=
+    roBanner+
     '<div class="ibox" style="margin-bottom:14px">'+
     '<div class="drow"><span class="dkey">Date</span><span class="dval">'+fmtDate(s.date)+(s.time?' at '+s.time:'')+'</span></div>'+
     '<div class="drow"><span class="dkey">Handler</span><span class="dval">'+(s.handler||'\u2014')+'</span></div>'+
@@ -661,71 +621,185 @@ function openSession(idx) {
     '<div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#bbb;margin-bottom:10px">Hides ('+s.hides.length+')</div>'+
     hidesHTML+
     (s.notes?'<hr style="border:none;border-top:1px solid #eee;margin:14px 0"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#bbb;margin-bottom:8px">Session Notes</div><div style="font-size:13px;line-height:1.7">'+s.notes+'</div>':'')+
-    thtml+'<div style="height:16px"></div>';
-  var tn=document.getElementById('btn-tn'); if(tn) tn.addEventListener('click',function(){saveTN(idx);});
-  var canDel = isOwn; // admin always, officer only their own
-  var canExp = role==='admin'||role==='trainer'||isOwn;
-  var fhtml='';
-  if(canExp) fhtml+='<button class="pbtn" id="btn-exp" style="flex:1;margin-top:0">&#128196; Export Report</button>';
-  if(canDel) fhtml+='<button class="sbtn" id="btn-del" style="color:var(--rd);border-color:var(--rd)">Delete</button>';
-  if(!canExp&&!canDel) fhtml='<button class="sbtn" id="btn-cl" style="flex:1">Close</button>';
-  document.getElementById('d-footer').innerHTML = fhtml;
-  var ex=document.getElementById('btn-exp'); if(ex) ex.addEventListener('click',exportReport);
-  var dl=document.getElementById('btn-del'); if(dl) dl.addEventListener('click',deleteSession);
-  var cl=document.getElementById('btn-cl'); if(cl) cl.addEventListener('click',function(){show('app');});
+    thtml+exportPanel+
+    '<div style="height:16px"></div>';
+  var tn=document.getElementById('btn-tn');if(tn)tn.addEventListener('click',function(){saveTN(idx);});
+  var pdfBtn=document.getElementById('btn-pdf');if(pdfBtn)pdfBtn.addEventListener('click',function(){exportPDF(idx);});
+  var emailBtn=document.getElementById('btn-email');if(emailBtn)emailBtn.addEventListener('click',function(){sendEmail(idx);});
+  var canDel=isOwn;
+  var fhtml=canDel?'<button class="sbtn" id="btn-del" style="color:var(--rd);border-color:var(--rd)">Delete</button>':'';
+  fhtml+='<button class="sbtn" id="btn-cl" style="flex:1">Close</button>';
+  document.getElementById('d-footer').innerHTML=fhtml;
+  var dl=document.getElementById('btn-del');if(dl)dl.addEventListener('click',deleteSession);
+  var cl=document.getElementById('btn-cl');if(cl)cl.addEventListener('click',function(){show('app');});
   show('detail');
 }
 
 async function saveTN(idx){
   var n=(document.getElementById('tn-note')||{}).value||'';
   var nm=(document.getElementById('tn-name')||{}).value||'';
-  var s=sessions[idx]; if(!s.fbId){alert('Cannot save \u2014 ID missing.');return;}
-  setSS('sy','Saving trainer note\u2026');
+  var s=sessions[idx];if(!s.fbId){alert('Cannot save.');return;}
   try{
     await setDoc(doc(db,'sessions',s.fbId),Object.assign({},s,{trainerNote:n,trainerName:nm,trainerDate:new Date().toISOString().split('T')[0]}));
-    setSS('ok','Trainer note saved \u2014 synced');
     alert('Trainer note saved!');show('app');showTab('audit');
-  }catch(e){setSS('er','Save failed');alert('Error saving. Check connection.');}
+  }catch(e){alert('Error saving. Check connection.');}
 }
 
 async function deleteSession(){
   if(!confirm('Delete this session? Cannot be undone.'))return;
-  var s=sessions[openIdx]; if(!s.fbId){alert('Cannot delete \u2014 ID missing.');return;}
-  try{
-    await deleteDoc(doc(db,'sessions',s.fbId));
-    show('app');showTab('audit');
-  }catch(e){alert('Error deleting. Check connection.');}
+  var s=sessions[openIdx];if(!s.fbId){alert('Cannot delete.');return;}
+  try{await deleteDoc(doc(db,'sessions',s.fbId));show('app');showTab('audit');}
+  catch(e){alert('Error deleting. Check connection.');}
 }
 
-function exportReport(){
-  var s=sessions[openIdx];
-  var ht=s.hides.map(function(h,i){return 'Hide #'+(i+1)+': '+(h.item||'\u2014')+'\n  Location: '+(h.loc||'\u2014')+(h.note?' ('+h.note+')':'')+'\n  Response: '+(h.resp||'\u2014')+'\n  Notes: '+(h.notes||'\u2014');}).join('\n\n');
-  var ln='='.repeat(50),dash='-'.repeat(50);
-  var txt='TAMPA GENERAL HOSPITAL\nK9 SECURITY UNIT \u2014 TRAINING SESSION REPORT\n'+ln+'\n\n'+
-    'Date: '+fmtDate(s.date)+(s.time?' at '+s.time:'')+'\nHandler: '+(s.handler||'\u2014')+'\nK9 Partner: '+(s.dog||'\u2014')+
-    '\nLocation: '+(s.location||'\u2014')+'\nObjective: '+(s.objective||'\u2014')+'\nConditions: '+(s.weather||'\u2014')+
-    '\nSupervisor: '+(s.supervisor||'\u2014')+'\n\n'+dash+'\nHIDE DOCUMENTATION ('+s.hides.length+' total)\n'+dash+'\n\n'+(ht||'No hides logged.')+
-    '\n\n'+dash+'\nSESSION NOTES\n'+dash+'\n\n'+(s.notes||'No additional notes.')+'\n\n'+
-    (s.trainerNote?dash+'\nTRAINER ASSESSMENT'+(s.trainerName?' \u2014 '+s.trainerName:'')+'\n'+dash+'\n\n'+s.trainerNote+'\n\n':'')+
-    ln+'\nGenerated: '+new Date().toLocaleString()+'\nExported by: '+(role==='officer'&&currentOfficer?currentOfficer.name:RL[role])+'\nTampa General Hospital \u2014 K9 Security Unit\nCONFIDENTIAL \u2014 For internal use only\n';
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
-  a.download='TGH_K9_'+s.date+'_'+(s.dog||'K9').replace(/\s/g,'_')+'.txt';
-  a.click();
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function safe(str){return (str||'').replace(/[^\x20-\x7E\n]/g,' ').trim();}
+function rc2(r){if(!r)return'';if(r.includes('Correct'))return'color:#1b5e20';if(r.includes('Miss'))return'color:#b71c1c';if(r.includes('False'))return'color:#bf360c';if(r.includes('Partial'))return'color:#e65100';return'';}
+function fmtDate(d){if(!d)return'\u2014';return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+
+// ── PDF ───────────────────────────────────────────────────────────────────────
+function buildPDF(idx){
+  var s=sessions[idx];
+  var doc=new window.jspdf.jsPDF({unit:'mm',format:'letter'});
+  var navy=[10,34,64],gold=[200,168,75],black=[26,26,26],gray=[120,120,120],light=[240,240,240];
+  var lm=20,rm=190,cw=170,y=0;
+  function checkY(n){if(y+n>270){doc.addPage();y=20;}}
+  doc.setFillColor(navy[0],navy[1],navy[2]);doc.rect(0,0,216,28,'F');
+  doc.setFillColor(gold[0],gold[1],gold[2]);doc.rect(0,26,216,2,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont('helvetica','bold');
+  doc.text('Tampa General Hospital',lm,11);
+  doc.setFontSize(10);doc.setFont('helvetica','normal');
+  doc.text('K9 Security Unit \u2014 Training Session Report',lm,18);
+  doc.setTextColor(180,200,220);doc.setFontSize(8);
+  doc.text('CONFIDENTIAL \u2014 For internal use only',lm,23);
+  y=38;
+  doc.setFillColor(light[0],light[1],light[2]);doc.roundedRect(lm,y,cw,52,3,3,'F');
+  doc.setTextColor(black[0],black[1],black[2]);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('SESSION INFORMATION',lm+4,y+7);
+  var fields=[['Date',fmtDate(s.date)+(s.time?' at '+s.time:'')],['Handler',safe(s.handler)],['K9 Partner',safe(s.dog)],['Location',safe(s.location)],['Objective',safe(s.objective)],['Conditions',safe(s.weather)||'Not recorded'],['Supervisor',safe(s.supervisor)||'N/A']];
+  var fy=y+14;
+  fields.forEach(function(f){
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(gray[0],gray[1],gray[2]);doc.text(f[0],lm+4,fy);
+    doc.setFont('helvetica','normal');doc.setTextColor(black[0],black[1],black[2]);doc.text(f[1]||'\u2014',lm+45,fy);
+    fy+=5.5;
+  });
+  y+=58;
+  if(s.hides&&s.hides.length){
+    checkY(14);
+    doc.setFillColor(navy[0],navy[1],navy[2]);doc.rect(lm,y,cw,8,'F');
+    doc.setTextColor(gold[0],gold[1],gold[2]);doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.text('HIDE DOCUMENTATION ('+s.hides.length+' total)',lm+4,y+5.5);
+    y+=11;
+    s.hides.forEach(function(h,i){
+      var rc3=h.resp&&h.resp.includes('Correct')?[27,94,32]:h.resp&&h.resp.includes('Miss')?[183,28,28]:black;
+      checkY(28);
+      doc.setFillColor(248,248,248);doc.roundedRect(lm,y,cw,24,2,2,'F');
+      doc.setFillColor(navy[0],navy[1],navy[2]);doc.circle(lm+7,y+7,4,'F');
+      doc.setTextColor(gold[0],gold[1],gold[2]);doc.setFontSize(8);doc.setFont('helvetica','bold');
+      doc.text(String(i+1),lm+7,y+9.5,{align:'center'});
+      doc.setTextColor(black[0],black[1],black[2]);doc.setFontSize(9);doc.setFont('helvetica','bold');
+      doc.text(safe(h.item)||'Item not specified',lm+14,y+8);
+      var hf=[['Location',safe(h.loc)+(h.note?' \u2014 '+safe(h.note):'')],['Response',safe(h.resp)||'\u2014'],['Notes',safe(h.notes)||'\u2014']];
+      var hy=y+13;
+      hf.forEach(function(hfi,fi){
+        doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(gray[0],gray[1],gray[2]);doc.text(hfi[0]+':',lm+14,hy);
+        if(fi===1)doc.setTextColor(rc3[0],rc3[1],rc3[2]);else doc.setTextColor(black[0],black[1],black[2]);
+        doc.setFont('helvetica','normal');
+        var val=hfi[1]||'\u2014';if(val.length>60)val=val.substring(0,57)+'...';
+        doc.text(val,lm+36,hy);hy+=4.5;
+      });
+      y+=27;
+    });
+  }
+  if(s.notes&&s.notes.trim()){
+    checkY(16);y+=4;
+    doc.setFillColor(navy[0],navy[1],navy[2]);doc.rect(lm,y,cw,8,'F');
+    doc.setTextColor(gold[0],gold[1],gold[2]);doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.text('SESSION NOTES',lm+4,y+5.5);y+=11;
+    doc.setTextColor(black[0],black[1],black[2]);doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.splitTextToSize(safe(s.notes),cw-8).forEach(function(line){checkY(6);doc.text(line,lm+4,y);y+=5.5;});
+  }
+  if(s.trainerNote&&s.trainerNote.trim()){
+    checkY(16);y+=4;
+    doc.setFillColor(8,80,65);doc.rect(lm,y,cw,8,'F');
+    doc.setTextColor(255,255,255);doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.text('TRAINER ASSESSMENT'+(s.trainerName?' \u2014 '+safe(s.trainerName):''),lm+4,y+5.5);y+=11;
+    doc.setTextColor(black[0],black[1],black[2]);doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.splitTextToSize(safe(s.trainerNote),cw-8).forEach(function(line){checkY(6);doc.text(line,lm+4,y);y+=5.5;});
+  }
+  var total=doc.internal.getNumberOfPages();
+  for(var p=1;p<=total;p++){
+    doc.setPage(p);
+    doc.setFillColor(light[0],light[1],light[2]);doc.rect(0,277,216,20,'F');
+    doc.setTextColor(gray[0],gray[1],gray[2]);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+    doc.text('Tampa General Hospital \u2014 K9 Security Unit',lm,284);
+    doc.text('Generated: '+new Date().toLocaleString(),lm,288.5);
+    doc.text('Page '+p+' of '+total,rm,284,{align:'right'});
+    doc.text('Exported by: '+(role==='officer'&&currentOfficer?currentOfficer.name:RL[role]),rm,288.5,{align:'right'});
+  }
+  return doc;
 }
 
-// ── K9 Roster ──────────────────────────────────────────────────────────────
+function exportPDF(idx){
+  var s=sessions[idx];
+  var fname='TGH_K9_'+s.date+'_'+(s.dog||'K9').replace(/\s/g,'_')+'.pdf';
+  buildPDF(idx).save(fname);
+}
+
+// ── Email ─────────────────────────────────────────────────────────────────────
+function sendEmail(idx){
+  var emailTo=document.getElementById('email-to');
+  var status=document.getElementById('email-status');
+  var btn=document.getElementById('btn-email');
+  if(!emailTo||!emailTo.value.trim()||!emailTo.value.includes('@')){
+    if(status){status.textContent='Please enter a valid email address.';status.className='email-status er';}
+    return;
+  }
+  var s=sessions[idx];
+  if(status){status.textContent='Sending\u2026';status.className='email-status';}
+  if(btn)btn.disabled=true;
+  var ht=s.hides.map(function(h,i){
+    return 'Hide #'+(i+1)+': '+(safe(h.item)||'\u2014')+'\n  Location: '+(safe(h.loc)||'\u2014')+(h.note?' ('+safe(h.note)+')':'')+'\n  Response: '+(safe(h.resp)||'\u2014')+'\n  Notes: '+(safe(h.notes)||'\u2014');
+  }).join('\n\n');
+  var reportText=
+    'TAMPA GENERAL HOSPITAL\nK9 SECURITY UNIT - TRAINING SESSION REPORT\n'+('='.repeat(48))+'\n\n'+
+    'Date: '+fmtDate(s.date)+(s.time?' at '+s.time:'')+'\n'+
+    'Handler: '+(safe(s.handler)||'\u2014')+'\n'+
+    'K9 Partner: '+(safe(s.dog)||'\u2014')+'\n'+
+    'Location: '+(safe(s.location)||'\u2014')+'\n'+
+    'Objective: '+(safe(s.objective)||'\u2014')+'\n'+
+    'Conditions: '+(safe(s.weather)||'Not recorded')+'\n'+
+    'Supervisor: '+(safe(s.supervisor)||'N/A')+'\n\n'+
+    ('-'.repeat(48))+'\nHIDE DOCUMENTATION ('+s.hides.length+' total)\n'+('-'.repeat(48))+'\n\n'+
+    (ht||'No hides logged.')+'\n\n'+
+    ('-'.repeat(48))+'\nSESSION NOTES\n'+('-'.repeat(48))+'\n\n'+
+    (safe(s.notes)||'No additional notes.')+'\n\n'+
+    (s.trainerNote&&s.trainerNote.trim()?('-'.repeat(48))+'\nTRAINER ASSESSMENT'+(s.trainerName?' - '+safe(s.trainerName):'')+'\n'+('-'.repeat(48))+'\n\n'+safe(s.trainerNote)+'\n\n':'')+
+    ('='.repeat(48))+'\nGenerated: '+new Date().toLocaleString()+'\nExported by: '+(role==='officer'&&currentOfficer?currentOfficer.name:RL[role])+'\nTampa General Hospital - K9 Security Unit\nCONFIDENTIAL - For internal use only';
+  emailjs.send('K9 Training','template_32jykl7',{
+    to_email: emailTo.value.trim(),
+    dog: safe(s.dog)||'K9',
+    date: fmtDate(s.date),
+    handler: safe(s.handler)||'\u2014',
+    location: safe(s.location)||'\u2014',
+    objective: safe(s.objective)||'\u2014',
+    report_content: reportText
+  }).then(function(){
+    if(status){status.textContent='Report sent to '+emailTo.value.trim();status.className='email-status ok';}
+    if(btn)btn.disabled=false;
+  }).catch(function(){
+    if(status){status.textContent='Email failed. Please download the PDF instead.';status.className='email-status er';}
+    if(btn)btn.disabled=false;
+  });
+}
+
+// ── Roster ────────────────────────────────────────────────────────────────────
 function renderRoster(){
   var info=document.getElementById('roster-info');
   var list=document.getElementById('roster-list');
-  var addWrap=document.getElementById('add-dog-wrap');
-  if(role==='officer'){
-    if(info)info.innerHTML='<strong>K9 Roster</strong><br>All active K9 partners in the unit.';
-    if(addWrap)addWrap.style.display='none';
-  }else{
-    if(info)info.innerHTML='<strong>Firearms Detection Unit</strong><br>TGH K9 Security. '+(role==='admin'?'Manage K9 partners below.':'Read-only view.');
-    if(addWrap)addWrap.style.display=role==='admin'?'block':'none';
-  }
+  var wrap=document.getElementById('add-dog-wrap');
+  if(info)info.innerHTML='<strong>K9 Roster</strong><br>'+(role==='admin'?'Manage K9 partners below.':'Active K9 partners in the unit.');
+  if(wrap)wrap.style.display=role==='admin'?'block':'none';
   list.innerHTML='';
   dogs.filter(Boolean).forEach(function(d,i){
     var card=document.createElement('div');card.className='rcard';
@@ -737,60 +811,45 @@ function renderRoster(){
     if(rm)rm.addEventListener('click',function(){removeDog(parseInt(this.dataset.rm));});
     list.appendChild(card);
   });
-  if(!dogs.length){
-    list.innerHTML='<div class="empty">No K9s in roster.<br>Add one below.</div>';
-  }
+  if(!dogs.length)list.innerHTML='<div class="empty">No K9s in roster.<br>Add one below.</div>';
 }
 
 async function addDog(){
   var name=document.getElementById('new-dog-name').value.trim();
   if(!name){alert('Please enter a K9 name.');return;}
   if(dogs.includes(name)){alert(name+' is already in the roster.');return;}
-  var newList=dogs.concat([name]);
   try{
-    await setDoc(doc(db,'config','dogs'),{list:newList});
+    await setDoc(doc(db,'config','dogs'),{list:dogs.concat([name])});
     document.getElementById('new-dog-name').value='';
   }catch(e){alert('Error saving. Check connection.');}
 }
 
 async function removeDog(i){
   if(!confirm('Remove '+dogs[i]+' from roster?'))return;
-  var newList=dogs.filter(function(_,idx){return idx!==i;});
-  try{
-    await setDoc(doc(db,'config','dogs'),{list:newList});
-  }catch(e){alert('Error removing. Check connection.');}
+  try{await setDoc(doc(db,'config','dogs'),{list:dogs.filter(function(_,idx){return idx!==i;})});}
+  catch(e){alert('Error removing. Check connection.');}
 }
 
-// ── Officer accounts ───────────────────────────────────────────────────────
+// ── Officers ──────────────────────────────────────────────────────────────────
 function populateOfficerDogSelect(){
   var sel=document.getElementById('new-off-dog');if(!sel)return;
-  var cur=sel.value;
-  sel.innerHTML='<option value="">&#8212; Select K9 &#8212;</option>';
-  dogs.forEach(function(d){
-    var o=document.createElement('option');o.value=d;o.textContent=d;
-    if(d===cur)o.selected=true;
-    sel.appendChild(o);
-  });
+  var cur=sel.value;sel.innerHTML='<option value="">&#8212; Select K9 &#8212;</option>';
+  dogs.forEach(function(d){var o=document.createElement('option');o.value=d;o.textContent=d;if(d===cur)o.selected=true;sel.appendChild(o);});
 }
 
 function renderOfficerList(){
   var list=document.getElementById('officer-list');if(!list)return;
-  if(!officers.length){
-    list.innerHTML='<div class="empty" style="padding:24px 0">No officer accounts yet.<br>Create one below.</div>';
-    return;
-  }
+  if(!officers.length){list.innerHTML='<div class="empty" style="padding:24px 0">No officer accounts yet.<br>Create one below.</div>';return;}
   list.innerHTML=officers.map(function(o,i){
-    var initials=o.name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+    var ini=o.name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
     return '<div class="ocard"><div class="ocard-hdr">'+
-      '<div class="oavatar">'+initials+'</div>'+
+      '<div class="oavatar">'+ini+'</div>'+
       '<div style="flex:1"><div style="font-weight:800;font-size:14px">'+o.name+'</div>'+
-      '<div style="font-size:12px;color:#888">K9: '+(o.dog||'Unassigned')+' &middot; PIN: '+'&bull;'.repeat(o.pin.length)+'</div></div>'+
+      '<div style="font-size:12px;color:#888">K9: '+(o.dog||'Unassigned')+' &middot; PIN set</div></div>'+
       '<button class="sbtn" style="color:var(--rd);border-color:var(--rd);font-size:12px" data-rmoff="'+i+'">Remove</button>'+
       '</div></div>';
   }).join('');
-  list.querySelectorAll('[data-rmoff]').forEach(function(b){
-    b.addEventListener('click',function(){removeOfficer(parseInt(this.dataset.rmoff));});
-  });
+  list.querySelectorAll('[data-rmoff]').forEach(function(b){b.addEventListener('click',function(){removeOfficer(parseInt(this.dataset.rmoff));});});
 }
 
 async function addOfficer(){
@@ -799,36 +858,29 @@ async function addOfficer(){
   var pin=document.getElementById('new-off-pin').value.trim();
   if(!name){alert('Please enter the officer name.');return;}
   if(!pin||pin.length!==4||!/^\d+$/.test(pin)){alert('PIN must be exactly 4 digits.');return;}
-  if(pin===ADMIN_PIN||pin===TRAINER_PIN){alert('That PIN is already in use by Admin or Trainer. Choose a different one.');return;}
-  if(officers.find(function(o){return o.pin===pin;})){alert('That PIN is already assigned to another officer. Choose a different one.');return;}
-  var newOfficer={name:name,dog:dog,pin:pin};
-  var newList=officers.concat([newOfficer]);
+  if(pin===ADMIN_PIN||pin===TRAINER_PIN){alert('That PIN is already in use. Choose a different one.');return;}
+  if(officers.find(function(o){return o.pin===pin;})){alert('That PIN is already assigned to another officer.');return;}
+  var newList=officers.concat([{name:name,dog:dog,pin:pin}]);
   try{
     await setDoc(doc(db,'config','officers'),{list:newList});
     document.getElementById('new-off-name').value='';
     document.getElementById('new-off-dog').selectedIndex=0;
     document.getElementById('new-off-pin').value='';
-    alert(name+' added successfully. They can now log in with PIN: '+pin);
+    alert(name+' added successfully. Their PIN is: '+pin);
   }catch(e){alert('Error saving. Check connection.');}
 }
 
 async function removeOfficer(i){
   if(!confirm('Remove '+officers[i].name+'? They will no longer be able to log in.'))return;
-  var newList=officers.filter(function(_,idx){return idx!==i;});
-  try{
-    await setDoc(doc(db,'config','officers'),{list:newList});
-  }catch(e){alert('Error removing. Check connection.');}
+  try{await setDoc(doc(db,'config','officers'),{list:officers.filter(function(_,idx){return idx!==i;})});}
+  catch(e){alert('Error removing. Check connection.');}
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-function rc2(r){if(!r)return'';if(r.includes('Correct'))return'color:#1b5e20';if(r.includes('Miss'))return'color:#b71c1c';if(r.includes('False'))return'color:#bf360c';if(r.includes('Partial'))return'color:#e65100';return'';}
-function fmtDate(d){if(!d)return'\u2014';return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-
-// Bootstrap — load officers for PIN check before login screen is used
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
 async function bootstrap(){
   try{
     var snap=await getDoc(doc(db,'config','officers'));
-    if(snap.exists()&&snap.data().list) officers=snap.data().list;
+    if(snap.exists()&&snap.data().list)officers=snap.data().list;
   }catch(e){}
 }
 bootstrap();
